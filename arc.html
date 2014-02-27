@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<head>
+    <style>
+    #svg { margin:0 auto; display: block;}
+    </style>
+    <script>
+
+        function GDimport(json){
+            console.dir( json );
+
+            var out = [];
+
+            for(i = 0; i < json.feed.entry.length; i++){
+                entry = json.feed.entry[i];
+
+                out[i] = {
+                    'id': entry.gsx$id.$t,
+                    'categories': entry.gsx$category.$t.split(','),
+                    'category': entry.gsx$category.$t,
+                    'name': entry.gsx$name.$t,
+                    'events': [
+                        {
+                            'start': entry.gsx$eventstart.$t,
+                            'end': entry.gsx$eventend.$t
+                        }
+                    ],
+                    'description': entry.gsx$description.$t,
+                    'color': entry.gsx$color.$t.replace('#','')
+                };
+            }
+
+            dataset = out;
+            console.log(dataset);
+        }
+
+        var dataset = {};
+
+    </script>
+    <script src="http://spreadsheets.google.com/feeds/list/0AspZRjIECCvPdGE0S3NIRzR0OW4ycDFVeU0wWmhDM1E/1/public/values?alt=json-in-script&amp;callback=GDimport"></script>
+</head>
+<body>
+
+<svg id="svg" height="500" width="500">
+ Sorry, your browser does not support inline SVG.
+<circle cx="250" cy="250" r="10" fill="red" />
+//call arc function
+<path id="arc1" fill="none" stroke="#446688" stroke-width="20" />
+<path id="arc2" fill="none" stroke="#444444" stroke-width="20" />
+<path id="arc3" fill="none" stroke="#465837" stroke-width="20" />
+</svg>
+
+<script type="text/javascript">
+
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+    var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+    return {
+    x: centerX + (radius * Math.cos(angleInRadians)),
+    y: centerY + (radius * Math.sin(angleInRadians))
+  };
+}
+
+function describeArc(x, y, radius, startAngle, endAngle){
+
+    var start = polarToCartesian(x, y, radius, endAngle);
+    var end = polarToCartesian(x, y, radius, startAngle);
+
+    var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+
+    var d = [
+        "M", start.x, start.y,
+        "A", radius, radius, 0, arcSweep, 0, end.x, end.y
+    ].join(" ");
+
+    return d;
+}
+
+Date.prototype.getDOY = function() {
+    var onejan = new Date(this.getFullYear(),0,1);
+    return Math.ceil((this - onejan) / 86400000);
+}
+
+function phenEvent(x, y, radius, startDate, endDate){
+    return describeArc(x, y, radius, dateToDegree(startDate), dateToDegree(endDate));
+}
+
+function dateToDegree(date) {
+    var date = new Date(date);
+    var dayOfYear = date.getDOY();
+    var ratio = dayOfYear / 365; // do we really need to worry about leap years? - yes!
+
+    return ratio * 360;
+}
+
+// var canvas = document.getElementById('svg'),
+//     x = canvas.width / 2,
+//     y = canvas.height / 2,
+//     radius = 25,
+//     c = 0; //number of entries
+
+// for (var s=0; s<dataset.length; s++)
+// {
+//     for (var i=0; i<dataset[i].events.length; i++)
+//     {
+//         var start = dataset[s].events[i].start;
+//         var end = dataset[s].events[i].end;
+
+//         console.log('context.arc(x, y, radius + (14.5 * '+s+'), '+date_to_radial(start)+', '+date_to_radial(end)+', '+counterClockwise+')');
+
+//         context.beginPath();
+//         context.arc(x, y, radius + (14.5 * s), date_to_radial(start), date_to_radial(end), counterClockwise); // Draw a circle
+//         context.lineWidth = 15;
+
+//         // line color
+//         context.strokeStyle = dataset[s]['color'];
+//         context.stroke();
+//         c++;
+//     }
+// }
+
+
+document.getElementById("arc1").setAttribute("d", phenEvent(250, 250, 25, "1/1/2014", "7/1/2014")); //phenEvent(x, y, radius, startDate, endDate)
+document.getElementById("arc2").setAttribute("d", phenEvent(250, 250, 50, "2/12/2014", "4/14/2014"));
+document.getElementById("arc3").setAttribute("d", phenEvent(250, 250, 75, "4/1/2014", "10/25/2014"));
+
+</script>
+</body>
+</html>
