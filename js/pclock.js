@@ -90,7 +90,7 @@ var pClock = {};
 	  	var r = this.options.r;
 	  	$( events ).each( function( index ){
 				var eventElement = self.paper.path().attr({
-					"stroke": self.options.defaultColor,
+					"stroke": getRandomColor(),
 					"stroke-width": self.options.strokeWidth
 				}).attr({
 					arc: [
@@ -225,6 +225,9 @@ String.prototype.slugify = function(){
   return this;
 }
 
+function getRandomColor() {
+	return '#'+Math.floor(Math.random()*16777215).toString(16);
+}
 
 // this parses the data that came in from google docs
 function phenClockGDImport (json ) {
