@@ -1,13 +1,13 @@
 // @todo add color to event data
-// build out display elements
+// @todo build out display elements
 
 // lets create a namespace
 var pClock = {};
 
-
-
+// a little closure, for you know, closure
 (function(){
 
+		// lets just keep some options here.
 	  pClock.options = {
 	  	renderer: {
 	  		defaultColor: "#ff0000",
@@ -22,6 +22,7 @@ var pClock = {};
 		  }
 	  }
 
+	  // this is for making ids out of plant names, but can come in useful later.
 	  pClock.slugifyString = function(str){
 	    str = str.toLowerCase();
 	    str = str.replace(/[^a-z0-9]+/g, '-');
@@ -29,7 +30,7 @@ var pClock = {};
 	    return str;
 		}
 
-		// PClock class
+		// PClock Class
 	  pClock.PClock = function( display, data ){
 	  	this.data;
 	  	this.renderer;
@@ -46,6 +47,8 @@ var pClock = {};
 	  	this.data = data;
 	  }
 
+	  // Its a verifiable factory
+	  // http://www.joezimjs.com/javascript/javascript-design-patterns-factory/
 	  pClock.PClock.prototype.buildSpecies = function(){
 			for ( var i=0; i < this.data.length; i++) {
 				sp = new pClock.Species( this.data[i], this, this.renderer );
@@ -54,6 +57,7 @@ var pClock = {};
 			}
 	  }
 
+	  // Renderer takes care of displaying things
 	  pClock.Renderer = function( el, options ) {
 	  	this.element = el;
 	  	this.options = options;
@@ -62,8 +66,9 @@ var pClock = {};
       this.defineCustomAttributes();
 	  }
 
-		pClock.Renderer.prototype.contructor = pClock.Renderer;
+		pClock.Renderer.prototype.constructor = pClock.Renderer;
 
+		// some extending of the Rafael instance
 	  pClock.Renderer.prototype.defineCustomAttributes = function(){
 	  	var self = this;
       var ca = this.paper.customAttributes.arc = function (x, y, radius, startDate, endDate) {
@@ -75,7 +80,6 @@ var pClock = {};
 	  }
 
 	  pClock.Renderer.prototype.renderSpecies = function( sp, speciesIndex ){
-	  	
 	  	var self = this;
 	  	var events = sp.getEvents();
 	  	var r = pClock.options.renderer.r;
@@ -170,22 +174,37 @@ var pClock = {};
 	  	return this.events;
 	  }
 
-	document.addEventListener("DOMContentLoaded", function(event) {
 
-//    console.log("DOM fully loaded and parsed");
+	  // Instantiate things once the dom is ready
+		document.addEventListener("DOMContentLoaded", function(event) {
 
 		Date.prototype.getDOY = function() {
 			var onejan = new Date( this.getFullYear(),0,1);
 			return Math.ceil((this - onejan) / 86400000);
 		}
-		$("#pClock");
-    phenClock = new pClock.PClock( document.getElementById('pClock'), pClock.data );
+
+		// This gets things started 
+		pClock.initApp = function(){
+			if( pClock.data ) {
+				clearInterval( pClock.dataLoadInterval );
+				phenClock = new pClock.PClock( document.getElementById('pClock'), pClock.data );
+			}
+		}
+
+		// start the app up only if the data's already loaded
+		if( pClock.data ) {
+			pClock.initApp();
+		}else {
+			pClock.dataLoadInterval = setInterval( pClock.initApp, 1000 );
+		}
 
   });
 
+
+
 })();
 
-
+// this parses the data that came in from google docs
 function phenClockGDImport (json ) {
 	var out = [];
 	for(i = 0; i < json.feed.entry.length; i++){
