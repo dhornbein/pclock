@@ -1,3 +1,6 @@
+// @todo add color to event data
+// build out display elements
+
 // lets create a namespace
 var pClock = {};
 
@@ -6,7 +9,9 @@ var pClock = {};
 (function(){
 
 	  pClock.options = {
-	  	render: {
+	  	renderer: {
+	  		defaultColor: "#ff0000",
+	  		strokeWidth: 10,
 		  	w: 500,
 		  	h: 500,
 		  	r: 10,
@@ -31,7 +36,7 @@ var pClock = {};
 	  	this.display;
 	  	this.species = {};
 	  	this.setData( data );
-	  	this.renderer = new pClock.Renderer( display, pClock.options.render );
+	  	this.renderer = new pClock.Renderer( display, pClock.options.renderer );
 	  	console.log( 'PClock:', data );
 	  	console.log( 'Renderer:', this.renderer );
 	  	this.buildSpecies();
@@ -42,11 +47,12 @@ var pClock = {};
 	  }
 
 	  pClock.PClock.prototype.buildSpecies = function(){
-	  	console.log( this.data.length );
-			for ( var s=0; s< this.data.length; s++) {
-				sp = new pClock.Species( this.data[s], this, this.renderer );
-				this.species[ pClock.slugifyString( this.data[s].name ) ] = sp;
-				this.renderer.renderSpecies( sp.getEvents() );
+			for ( var i=0; i < this.data.length; i++) {
+	  		var r = pClock.options.renderer.r * i;
+				sp = new pClock.Species( this.data[i], this, this.renderer );
+				this.species[ pClock.slugifyString( this.data[i].name ) ] = sp;
+				console.log( r, i, r*i );
+				this.renderer.renderSpecies( sp, r );
 			}
 	  }
 
@@ -54,23 +60,61 @@ var pClock = {};
 	  	this.element = el;
 	  	this.options = options;
       this.paper = Raphael( this.element, this.options.w, this.options.h );
+      console.log( this.paper );
       this.defineCustomAttributes();
 	  }
 
 		pClock.Renderer.prototype.contructor = pClock.Renderer;
 
 	  pClock.Renderer.prototype.defineCustomAttributes = function(){
+	  	var self = this;
       var ca = this.paper.customAttributes.arc = function (x, y, radius, startDate, endDate) {
         return {
-        	path: describeArc(x, y, radius, dateToDegree(startDate), dateToDegree(endDate))
+        	path: self.describeArc(x, y, radius, self.dateToDegree(startDate), self.dateToDegree(endDate))
         };
       };
       return ca;
 	  }
 
-	  pClock.Renderer.prototype.renderSpecie = function( events ){
-	  	events.each( function(){
-				var anArc = this.paper.path().attr({stroke: color, "stroke-width": 10}).attr({arc: [centerX, centerY, R, start, end]});
+	  pClock.Renderer.prototype.renderSpecies = function( sp, r ){
+	  	
+	  	var self = this;
+	  	var events = sp.getEvents();
+
+	  	console.log( "::::::", events, r );
+
+	  	$( events ).each( function( index ){
+	  		// console.log( this, index, r );
+				var eventElement = self.paper.path().attr({
+					"stroke": pClock.options.renderer.defaultColor,
+					"stroke-width": pClock.options.renderer.strokeWidth
+				}).attr({
+					arc: [
+						pClock.options.renderer.center.x,
+						pClock.options.renderer.center.y,
+						r,
+						events[index].start,
+						events[index].end
+					]
+				});
+				self.assignSpeciesEventEventHandlers( sp.getData(), eventElement );
+	  	});
+	  }
+
+	  pClock.Renderer.prototype.assignSpeciesEventEventHandlers = function( data, eventElement) {
+	  	this.assignSpeciesEventMouseOver( data, eventElement );
+	  	this.assignSpeciesEventClick( data, eventElement );
+	  }
+	  
+	  pClock.Renderer.prototype.assignSpeciesEventMouseOver = function( data, eventElement ) {
+	  	eventElement.mouseover( function( e ){
+	  		console.log( "mouseover", data.name );
+	  	});
+	  }
+
+	  pClock.Renderer.prototype.assignSpeciesEventClick = function( data, eventElement ) {
+	  	eventElement.mouseover( function( e ){
+	  		console.log( "clicked", data.name );
 	  	});
 	  }
 
@@ -101,10 +145,6 @@ var pClock = {};
 			}
 		}
 
-	  pClock.Renderer.prototype.drawArc = function(){
-
-	  }
-
 		pClock.PClock.prototype.contructor = pClock.PClock;
 
 	  pClock.Species = function ( data, marshal ) {
@@ -117,24 +157,31 @@ var pClock = {};
 	  	this.description = data.description;
 	  	this.color = data.color;
 	  	this.events = data.events;
-	  	console.log( this.name, "reporting for duty! my events are", this.events );
+//	  	console.log( this.name, "reporting for duty! my events are", this.events );
+	  }
+
+	  pClock.Species.prototype.getData = function(){
+	  	return {
+	  		name: this.name,
+	  		commonName: this.commonName,
+	  		description: this.description,
+	  		color: this.color
+	  	}
 	  }
 
 	  pClock.Species.prototype.getEvents = function(){
-	  	return {
-	  		events: this.events
-	  	}
+	  	return this.events;
 	  }
 
 	document.addEventListener("DOMContentLoaded", function(event) {
 
-    console.log("DOM fully loaded and parsed");
+//    console.log("DOM fully loaded and parsed");
 
 		Date.prototype.getDOY = function() {
 			var onejan = new Date( this.getFullYear(),0,1);
 			return Math.ceil((this - onejan) / 86400000);
 		}
-
+		$("#pClock");
     phenClock = new pClock.PClock( document.getElementById('pClock'), pClock.data );
 
   });
@@ -145,7 +192,6 @@ var pClock = {};
 
 
 function phenClockGDImport (json ) {
-	console.dir( json );
 	var out = [];
 	for(i = 0; i < json.feed.entry.length; i++){
 		entry = json.feed.entry[i];
