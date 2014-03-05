@@ -37,8 +37,8 @@ var pClock = {};
 	  	this.species = {};
 	  	this.setData( data );
 	  	this.renderer = new pClock.Renderer( display, pClock.options.renderer );
-	  	console.log( 'PClock:', data );
-	  	console.log( 'Renderer:', this.renderer );
+	  	// console.log( 'PClock:', data );
+	  	// console.log( 'Renderer:', this.renderer );
 	  	this.buildSpecies();
 	  }
 
@@ -48,11 +48,9 @@ var pClock = {};
 
 	  pClock.PClock.prototype.buildSpecies = function(){
 			for ( var i=0; i < this.data.length; i++) {
-	  		var r = pClock.options.renderer.r * i;
 				sp = new pClock.Species( this.data[i], this, this.renderer );
 				this.species[ pClock.slugifyString( this.data[i].name ) ] = sp;
-				console.log( r, i, r*i );
-				this.renderer.renderSpecies( sp, r );
+				this.renderer.renderSpecies( sp, i );
 			}
 	  }
 
@@ -76,12 +74,11 @@ var pClock = {};
       return ca;
 	  }
 
-	  pClock.Renderer.prototype.renderSpecies = function( sp, r ){
+	  pClock.Renderer.prototype.renderSpecies = function( sp, speciesIndex ){
 	  	
 	  	var self = this;
 	  	var events = sp.getEvents();
-
-	  	console.log( "::::::", events, r );
+	  	var r = pClock.options.renderer.r;
 
 	  	$( events ).each( function( index ){
 	  		// console.log( this, index, r );
@@ -92,7 +89,7 @@ var pClock = {};
 					arc: [
 						pClock.options.renderer.center.x,
 						pClock.options.renderer.center.y,
-						r,
+						r * speciesIndex,
 						events[index].start,
 						events[index].end
 					]
@@ -186,9 +183,7 @@ var pClock = {};
 
   });
 
-
 })();
-
 
 
 function phenClockGDImport (json ) {
