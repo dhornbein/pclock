@@ -3,12 +3,23 @@
 
 // lets create a namespace, we should probably marry this namespace to the self-executing anonymous function below
 // http://addyosmani.com/blog/essential-js-namespacing/
-var pClock = pClock || {};
+// probably shift to use this pattern
+// http://www.andismith.com/blog/2011/10/self-executing-anonymous-revealing-module-pattern/
 
+var pClock = pClock || {};
 // this is a self-executing-anonymous function, it's handy for namespacing as well
-(function(){
+// passing window to the function is unecessary, but helps if the code is minified…	
+// "window" becomes "a"
+(function(window){
 
 	
+	function slugify( string ){
+	  string.toLowerCase();
+	  string.replace(/[^a-z0-9]+/g, '-');
+	  string.replace(/^-|-$/g, '');
+	  return string;
+	}
+
 	////////////
 	// PClock
 	//
@@ -51,7 +62,7 @@ var pClock = pClock || {};
 	  buildSpecies: function(){
 			for ( var i=0; i < this.data.length; i++) {
 				sp = new pClock.Species( this.data[i], this, this.renderer );
-				this.species[ this.data[i].name.slugify() ] = sp;
+				this.species[ slugify( this.data[i].name ) ] = sp;
 				this.renderer.renderSpecies( sp, i );
 			}
 	  }
@@ -67,7 +78,6 @@ var pClock = pClock || {};
   	this.element = el;
   	this.options = options;
     this.paper = Raphael( this.element, this.options.w, this.options.h );
-    console.log( this.paper );
     this.defineCustomAttributes();
   }
 
@@ -102,6 +112,16 @@ var pClock = pClock || {};
 						events[speciesEvent].end
 					]
 				});
+				/*
+					@todo refactor assigning of event handlers, for next session...
+					Should the renderer be handling the event handlers?
+					Should the instances of Species themselves?
+					Probably.
+					Renderer should be returning the eventElement (which is an svg obj)
+					and then pClock itself should be doing something like... 
+					sp.registerEventObj(eventElement) in the buildSpecies loop passing the reference
+					of the Specie itself, which then handles the event handler assignment
+				*/
 				this.assignSpeciesEventEventHandlers( sp.getData(), eventElement );
 	  	}
 	  },
@@ -113,13 +133,16 @@ var pClock = pClock || {};
   
 		assignSpeciesEventMouseOver: function( data, eventElement ) {
 	  	eventElement.mouseover( function( e ){
-	  		console.log( "mouseover", data.name );
+	  		// e.clientX and e.clientY are the mouse coords
+	  		// ahem... 
+	  		console.log( "mouseover", data.name, e );
 	  	});
 	  },
 
 		assignSpeciesEventClick: function( data, eventElement ) {
 	  	eventElement.click( function( e ){
-	  		console.log( "clicked", data.name );
+	  		// e.clientX and e.clientY are the mouse coords
+	  		console.log( "clicked", data.name, e );
 	  	});
 	  },
 
@@ -199,32 +222,28 @@ var pClock = pClock || {};
 
 		// This gets things started 
 		pClock.initApp = function(){
+			// only if we have the data... see below
 			if( pClock.data ) {
+				// ok then, stop running initapp... 
 				clearInterval( pClock.dataLoadInterval );
+				// lets create the pClock
 				phenClock = new pClock.PClock( document.getElementById('pClock'), pClock.data );
 			}
 		}
 
-		// start the app up only if the data's already loaded
+		// do we have the data?
 		if( pClock.data ) {
+			// then lets do this
 			pClock.initApp();
 		}else {
-			pClock.dataLoadInterval = setInterval( pClock.initApp, 1000 );
+			// well lets run initApp every 200ms....
+			pClock.dataLoadInterval = setInterval( pClock.initApp, 200 );
 		}
 
 	});
 
-}());
+}(window));
 
-
-// Extending native js String
-// this is for making ids out of plant names, but can come in useful later.
-String.prototype.slugify = function(){
-  this.toLowerCase();
-  this.replace(/[^a-z0-9]+/g, '-');
-  this.replace(/^-|-$/g, '');
-  return this;
-}
 
 // this parses the data that came in from google docs
 function phenClockGDImport (json ) {
