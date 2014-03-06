@@ -30,12 +30,12 @@ var pClock = {};
 	  	renderer: {
 	  		defaultColor: "#ff0000",
 	  		strokeWidth: 10,
-		  	w: 500,
-		  	h: 500,
-		  	r: 10,
+		  	w: window.screen.availWidth,
+		  	h: window.screen.availHeight,
+		  	r: 20,
 		  	center: {
-		  		x: 250,
-		  		y: 250
+		  		x: window.screen.availWidth * .5,
+		  		y: window.screen.availHeight * .45,
 		  	}
 		  }
 	  },
@@ -79,30 +79,29 @@ var pClock = {};
       var ca = this.paper.customAttributes.arc = function (x, y, radius, startDate, endDate) {
         return {
         	path: self.describeArc(x, y, radius, self.dateToDegree(startDate), self.dateToDegree(endDate))
-        };
+        }
       };
       return ca;
 	  },
 
 		renderSpecies: function( sp, speciesIndex ){
-	  	var self = this;
 	  	var events = sp.getEvents();
 	  	var r = this.options.r;
-	  	$( events ).each( function( index ){
-				var eventElement = self.paper.path().attr({
-					"stroke": getRandomColor(),
-					"stroke-width": self.options.strokeWidth
+	  	for( var speciesEvent in events ) {
+				var eventElement = this.paper.path().attr({
+					"stroke": "#" + sp.color,
+					"stroke-width": this.options.strokeWidth
 				}).attr({
 					arc: [
-						self.options.center.x,
-						self.options.center.y,
-						r * speciesIndex,
-						events[index].start,
-						events[index].end
+						this.options.center.x,
+						this.options.center.y,
+ 						r * speciesIndex,
+						events[speciesEvent].start,
+						events[speciesEvent].end
 					]
 				});
-				self.assignSpeciesEventEventHandlers( sp.getData(), eventElement );
-	  	});
+				this.assignSpeciesEventEventHandlers( sp.getData(), eventElement );
+	  	}
 	  },
 
 		assignSpeciesEventEventHandlers: function( data, eventElement) {
@@ -117,7 +116,7 @@ var pClock = {};
 	  },
 
 		assignSpeciesEventClick: function( data, eventElement ) {
-	  	eventElement.mouseover( function( e ){
+	  	eventElement.click( function( e ){
 	  		console.log( "clicked", data.name );
 	  	});
 	  },
