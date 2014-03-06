@@ -1,12 +1,14 @@
 // @todo add color to event data
 // @todo build out display elements
 
-// lets create a namespace
-var pClock = {};
+// lets create a namespace, we should probably marry this namespace to the self-executing anonymous function below
+// http://addyosmani.com/blog/essential-js-namespacing/
+var pClock = pClock || {};
 
-// a little closure, for you know, closure
+// this is a self-executing-anonymous function, it's handy for namespacing as well
 (function(){
 
+	
 	////////////
 	// PClock
 	//
@@ -212,7 +214,7 @@ var pClock = {};
 
 	});
 
-})();
+}());
 
 
 // Extending native js String
@@ -222,10 +224,6 @@ String.prototype.slugify = function(){
   this.replace(/[^a-z0-9]+/g, '-');
   this.replace(/^-|-$/g, '');
   return this;
-}
-
-function getRandomColor() {
-	return '#'+Math.floor(Math.random()*16777215).toString(16);
 }
 
 // this parses the data that came in from google docs
