@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/i/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>PClock OOP</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  <link rel="stylesheet" href="css/styles.css">
+
+</head>
+<body>
+
+<!--   <header id="header">
+    PhenClock
+  </header>
+ -->
+  <div id="main" role="main">
+
+    <div id="pClock">
+        <!-- Insert fallback content here -->
+    </div>
+
+    <div id="dataOverlay">
+        <!-- Insert fallback content here -->
+    </div>
+
+  </div>
+
+  <footer id="footer">
+  </footer>
+
+    <script src="libraries/raphael/raphael-min.js"></script>
+    <script src="js/pclock.utils.js"></script>
+    <script src="js/pclock.species.js"></script>
+    <script src="js/pclock.renderer.js"></script>
+    <script src="js/pclock.pclock.js"></script>
+    <script src="js/pclock.js"></script>
+    <script src="js/plugins.js"></script>
+    <!-- load data from google doc and call phenClockGDImport -->
+    <script>
+    // this parses the data that came in from google docs
+      function phenClockGDImport (json ) {
+        var out = [];
+        for( var i = 0; i < json.feed.entry.length; i++){
+          var entry = json.feed.entry[i];
+          out[i] = {
+            'id': entry.gsx$id.$t,
+            'categories': entry.gsx$category.$t.split(','),
+            'category': entry.gsx$category.$t,
+            'name': entry.gsx$name.$t,
+            'events': [{
+                'start': entry.gsx$eventstart.$t,
+                'end': entry.gsx$eventend.$t
+            }],
+            'description': entry.gsx$description.$t,
+            'color': entry.gsx$color.$t.replace('#','')
+          }
+        }
+        pClock.data = out;
+      }
+    </script>
+    <script src="http://spreadsheets.google.com/feeds/list/0AspZRjIECCvPdGE0S3NIRzR0OW4ycDFVeU0wWmhDM1E/1/public/values?alt=json-in-script&amp;callback=phenClockGDImport"></script>
+
+</body>
+</html>
