@@ -1,6 +1,9 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+  var serverPort = 8000;
+  var liveReloadPort = 35729;
+
   // load all grunt tasks matching the `grunt-*` pattern
   require('load-grunt-tasks')(grunt);
 
@@ -134,7 +137,7 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          port: 8000,
+          port: serverPort,
           base: './',
           hostname: 'localhost',
           livereload: true
@@ -143,12 +146,15 @@ module.exports = function(grunt) {
     },
 
     watch: {
+      options: {
+        livereload: liveReloadPort
+      },
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
         tasks: ['jshint:gruntfile']
       },
       html: {
-        files: '**/*.html',
+        files: '*.html',
         tasks: [ 'string-replace', 'copy:dist' ]
       },
       scripts: {
