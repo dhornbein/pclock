@@ -8,26 +8,30 @@ To use the grunt frontend ops and eventually bower for package management you wi
 This includes jslinting, javascript concatenation and minification, and all the wonders grunt has to offer.
 
 
-Dependencies
-============
+Dev Dependencies
+============================
+The Phenological clock is mostly pure javascript.
+However some newfangled tools can make development more pleasant.
+
 [Node.js](http://nodejs.org/)
 [npm](https://www.npmjs.org/)
+[grunt](https://www.gruntjs.com/)
 
 
-Installation
-============
+Dev Installation
+================
 
-Install the grunt command line interface
-```
-npm install -g grunt-cli
-```
+Make sure nodejs and npm are installed (follow the links above)
 
 Install the project dependencies
 ```
 npm install
 ```
 
-then while working, 
 ```
-grunt watch
+grunt serve
 ```
+
+Point your browser to [localhost:8000](localhost:8000) et voila.
+
+If you want livereload to work, install the browser extensions here: http://feedback.livereload.com/knowledgebase/articles/86242-how-do-i-install-and-use-the-browser-extensions-
