@@ -13,7 +13,7 @@ module.exports = function(grunt) {
     concat: {
       scripts: {
         src: ["js/**/*.js"],
-        dest: 'js/dist/pClock.pkg.js'
+        dest: 'dist/js/pClock.pkg.js'
       }
     },
 
@@ -75,9 +75,17 @@ module.exports = function(grunt) {
             dest: 'dist/'
           }
         ]
+      },
+      distSrc: {
+        files: [
+          {
+            expand: true,
+            src: ['index.html','README.md','libraries/**/*','js/**/*','css/**/*'],
+            dest: 'dist/src/'
+          }
+        ]
       }
     },
-
 
     'string-replace': {
       inline: {
@@ -122,6 +130,18 @@ module.exports = function(grunt) {
         }
       }
     },
+
+    connect: {
+      server: {
+        options: {
+          port: 8000,
+          base: './',
+          hostname: 'localhost',
+          livereload: true
+        }
+      }
+    },
+
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
@@ -129,15 +149,25 @@ module.exports = function(grunt) {
       },
       html: {
         files: '**/*.html',
-        tasks: [ 'prod', 'copy:dist' ]
+        tasks: [ 'string-replace', 'copy:dist' ]
       },
       scripts: {
         files: 'js/*.js',
-        tasks: [ 'jshint:scripts' , 'concat:scripts', 'uglify:scripts', 'copy:dist', 'string-replace' ]
+        tasks: [ 'jshint:scripts' , 'concat:scripts', 'uglify:scripts', 'copy:dist', 'string-replace', 'copy:distSrc' ]
       },
       css: {
         files: '**/*.css',
         tasks: [ 'copy:dist', 'cssmin', 'copy:dist' ]
+      }
+    },
+
+    parallel: {
+      watch: {
+        options: {
+          grunt: true,
+          stream: true
+        },
+        tasks: ['watch']
       }
     }
 
@@ -147,8 +177,16 @@ module.exports = function(grunt) {
   grunt.registerTask(
     'default',
     'Runs linting on Javascript, concats and uflifys the js',
-    [ 'jshint', 'concat', 'uglify', 'cssmin', 'copy', 'string-replace' ]
+    [ 'jshint', 'concat', 'cssmin', 'copy:dist', 'uglify', 'string-replace', 'copy:distSrc' ]
   );
+
+  //////////////////////////////
+  // Server Task
+  //////////////////////////////
+  grunt.registerTask('serve', 'start the dev server', function(){
+      grunt.task.run('connect');
+      grunt.task.run('parallel:watch');
+  });
 
 };
 
