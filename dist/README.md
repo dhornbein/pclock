@@ -1,7 +1,7 @@
-pClock
+pclock
 ======
 
-To use the pClock itself just launch index.html in the dist/ folder. 
+To use the pClock itself just launch index.html in the build folder. 
 We will include source files in dst shortly.
 
 To use the grunt frontend ops and eventually bower for package management you will need to install dependencies.
@@ -10,14 +10,11 @@ This includes jslinting, javascript concatenation and minification, and all the 
 
 Dev Dependencies
 ============================
-The Phenological clock is mostly pure javascript, launch index.html in either the dist/ or the dist/src folder, and you're good to go. However some newfangled tools can make development more pleasant.
-
-Namely
+The Phenological clock is mostly pure javascript.
+However some newfangled tools can make development more pleasant.
 
 [Node.js](http://nodejs.org/)
-
 [npm](https://www.npmjs.org/)
-
 [grunt](https://www.gruntjs.com/)
 
 
