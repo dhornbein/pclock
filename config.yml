@@ -1,0 +1,7 @@
+#########################
+## configurable settings
+#########################
+serverPort: 8000
+liveReloadPort: 35729
+
+

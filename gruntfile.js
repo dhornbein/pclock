@@ -1,9 +1,9 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
-  var serverPort = 8000;
-  var liveReloadPort = 35729;
+  var settings = grunt.file.readYAML('config.yml');
 
+  grunt.log.write( settings.serverPort );
   // load all grunt tasks matching the `grunt-*` pattern
   require('load-grunt-tasks')(grunt);
 
@@ -90,6 +90,8 @@ module.exports = function(grunt) {
       }
     },
 
+    // should eventually use either some moustache template, or a config variable
+    // rather than just string replace to switch between production and dev scripts
     'string-replace': {
       inline: {
         files: {
@@ -137,7 +139,7 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          port: serverPort,
+          port: settings.serverPort,
           base: './',
           hostname: 'localhost',
           livereload: true
@@ -147,7 +149,7 @@ module.exports = function(grunt) {
 
     watch: {
       options: {
-        livereload: liveReloadPort
+        livereload: settings.liveReloadPort
       },
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
