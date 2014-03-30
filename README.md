@@ -2,10 +2,11 @@ pClock
 ======
 
 To use the pClock itself just launch index.html in the dist/ folder. 
-We will include source files in dst shortly.
 
-To use the grunt frontend ops and eventually bower for package management you will need to install dependencies.
-This includes jslinting, javascript concatenation and minification, and all the wonders grunt has to offer.
+dist/src holds the sources.
+
+To benefit from grunt automation, livereload, and all the newfangled fancyness* you will need to install dependencies.
+* = livereload includes jslinting, javascript concatenation and minification, and other wonders grunt has to offer.
 
 
 Dev Dependencies
