@@ -6,14 +6,14 @@
   // Class PClock
   pClock.PClock = function( display, data, options ) {
     // set up options
-    this.options = pClock.util.merge( this.options, options ); 
+    this.options = pClock.util.merge( this.options, options );
     this.species = {}; // an object of species we're tracking on this clock
     this.setData( data ); // using a getter to set the data, in case we need to do more than just direct copy one day
     // we instantiate the renderer instance
     this.renderer = new pClock.Renderer( display, this.options.renderer );
     // build it out
     this.buildSpecies();
-    // 
+    //
   }
 
   pClock.PClock.prototype.options = {
@@ -41,6 +41,8 @@
       // after we've logged them all... that would probably be better
       this.renderer.renderSpecies( sp, i );
     }
+    // this renders the clock face
+    this.renderer.renderChrome( i );
   }
 
 

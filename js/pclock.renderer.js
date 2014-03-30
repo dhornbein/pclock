@@ -16,12 +16,12 @@
   pClock.Renderer.prototype.options = {
     defaultColor: "#ff0000",
     strokeWidth: 10,
-    w: window.screen.availWidth,
-    h: window.screen.availHeight,
-    r: 20,
+    w: window.innerWidth,
+    h: window.innerHeight,
+    r: 15,
     center: {
-      x: window.screen.availWidth * 0.5,
-      y: window.screen.availHeight * 0.45,
+      x: window.innerWidth * 0.5,
+      y: window.innerHeight * 0.5,
     }
   };
 
@@ -40,6 +40,7 @@
   pClock.Renderer.prototype.renderSpecies = function(sp, speciesIndex){
     var events = sp.getEvents();
     var r = this.options.r;
+    var slug = pClock.util.slugify(sp.name);
     for( var speciesEvent in events ) {
       var eventElement = this.paper.path().attr({
         "stroke": "#" + sp.color,
@@ -54,7 +55,30 @@
         ]
       });
 
+      eventElement.node.setAttribute("class", slug );
+
       sp.instantiateEventHandlers( eventElement );
+    }
+  };
+
+  pClock.Renderer.prototype.renderChrome = function( speciesIndex ){
+    var r = this.options.r;
+    var center = this.paper.circle(this.options.center.x, this.options.center.y, 5).attr({fill: "#99A", "stroke-width": 0});
+    var container = this.paper.circle(this.options.center.x, this.options.center.y, r * speciesIndex).attr({stroke: "#99A", "stroke-width": 1});
+    var containerClock = this.paper.path().attr({stroke: "#99A", "stroke-width": 10}).attr({arc: [this.options.center.x, this.options.center.y, r * speciesIndex, "1/1/2014", Date()]});
+    var months = [];
+    var i = 0;
+    while (i++ < 13){
+      months[i] = this.paper.path()
+        .attr({stroke: "#ccc", "stroke-width": 5})
+        .attr({arc: [
+          this.options.center.x,
+          this.options.center.y,
+          r * speciesIndex + 10,
+          i + "/1/2014",
+          i + "/2/2014"
+        ]});
+      months[i].node.setAttribute("class","month-" + i);
     }
   };
 
