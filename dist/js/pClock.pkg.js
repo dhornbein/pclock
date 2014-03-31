@@ -2,16 +2,17 @@
   // Instantiate things once the dom is ready
   document.addEventListener("DOMContentLoaded", function() {
 
-    // This gets things started
+    // This gets things started 
     pClock.initialize = function(){
       // only if we have the data... see below
       if( pClock.data ) {
-        // ok then, stop running initapp...
+        // ok then, stop running initapp... 
         clearInterval( pClock.dataLoadInterval );
         // lets create the pClock
         // demonstrate custom options
         var rendererOptions = {
-          r: 20
+          r: 20,
+          chromeRadiusMod: pClock.data.length
         }
         var renderer = new pClock.Renderer( document.getElementById('pClock'), rendererOptions );
         var pclock = new pClock.PClock( pClock.data );
@@ -42,13 +43,13 @@
   // Class PClock
   pClock.PClock = function( data, options ) {
     // set up options
-    this.options = pClock.util.merge( this.options, options ); 
+    this.options = pClock.util.merge( this.options, options );
     this.species = {}; // an object of species we're tracking on this clock
     this.setData( data ); // using a getter to set the data, in case we need to do more than just direct copy one day
     // we instantiate the renderer instance
     // build it out
     this.buildSpecies();
-    // 
+    //
   }
 
   pClock.PClock.prototype.setRenderer = function( renderer ){
@@ -101,17 +102,20 @@
     this.paper = new Raphael( this.element, this.options.w, this.options.h );
     // some tweaking
     this.defineCustomRaphaelAttributes();
+    this.renderChrome();
   };
 
   pClock.Renderer.prototype.options = {
     defaultColor: "#ff0000",
+    chromeColor: "#99a",
     strokeWidth: 10,
+    chromeRadiusMod: 15,
     w: window.innerWidth,
     h: window.innerHeight,
     r: 15,
     center: {
       x: window.innerWidth * 0.5,
-      y: window.innerHeight * 0.45,
+      y: window.innerHeight * 0.5,
     }
   };
 
@@ -128,23 +132,55 @@
   };
 
   pClock.Renderer.prototype.renderSpecies = function(sp, speciesIndex){
-    var events = sp.getEvents();
-    var r = this.options.r;
+    var events, r, center, slug;
+    events = sp.getEvents();
+    r = this.options.r;
+    center = this.options.center;
+    slug = pClock.util.slugify(sp.name);    
     for( var speciesEvent in events ) {
       var eventElement = this.paper.path().attr({
         "stroke": "#" + sp.color,
         "stroke-width": this.options.strokeWidth
       }).attr({
         arc: [
-          this.options.center.x,
-          this.options.center.y,
-            r * speciesIndex,
+          center.x,
+          center.y,
+          r * speciesIndex,
           events[speciesEvent].start,
           events[speciesEvent].end
         ]
       });
-
+      eventElement.node.setAttribute("class", slug );
       sp.instantiateEventHandlers( eventElement );
+    }
+  };
+
+  pClock.Renderer.prototype.renderChrome = function(){
+    var r, center, chromeColor, chromeRadiusMod;
+    r = this.options.r;
+    center = this.options.center;
+    chromeColor = this.options.chromeColor;
+    chromeRadiusMod = this.options.chromeRadiusMod;
+
+    // center
+    this.paper.circle(center.x, center.y, 5).attr({fill: chromeColor, "stroke-width": 0});
+    // container
+    this.paper.circle(center.x, center.y, r * chromeRadiusMod ).attr({stroke: chromeColor, "stroke-width": 1});
+    // clock
+    this.paper.path().attr({stroke: chromeColor, "stroke-width": 10}).attr({arc: [this.options.center.x, this.options.center.y, r * chromeRadiusMod, "1/1/2014", Date()]});
+    var months = [];
+    var i = 0;
+    while (i++ < 13){
+      months[i] = this.paper.path()
+        .attr({stroke: "#ccc", "stroke-width": 5})
+        .attr({arc: [
+          this.options.center.x,
+          this.options.center.y,
+          r * chromeRadiusMod,
+          i + "/1/2014",
+          i + "/2/2014"
+        ]});
+      months[i].node.setAttribute("class","month-" + i);
     }
   };
 

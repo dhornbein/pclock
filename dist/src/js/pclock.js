@@ -2,16 +2,17 @@
   // Instantiate things once the dom is ready
   document.addEventListener("DOMContentLoaded", function() {
 
-    // This gets things started
+    // This gets things started 
     pClock.initialize = function(){
       // only if we have the data... see below
       if( pClock.data ) {
-        // ok then, stop running initapp...
+        // ok then, stop running initapp... 
         clearInterval( pClock.dataLoadInterval );
         // lets create the pClock
         // demonstrate custom options
         var rendererOptions = {
-          r: 20
+          r: 20,
+          chromeRadiusMod: pClock.data.length
         }
         var renderer = new pClock.Renderer( document.getElementById('pClock'), rendererOptions );
         var pclock = new pClock.PClock( pClock.data );

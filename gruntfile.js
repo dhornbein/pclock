@@ -3,7 +3,6 @@ module.exports = function(grunt) {
 
   var settings = grunt.file.readYAML('config.yml');
 
-  grunt.log.write( settings.serverPort );
   // load all grunt tasks matching the `grunt-*` pattern
   require('load-grunt-tasks')(grunt);
 
@@ -53,10 +52,11 @@ module.exports = function(grunt) {
       scripts:{
         options: {
           compress: true,
-          mangle: true
+          mangle: true,
+          report: 'gzip'
         },
         files:{
-          'dist/js/pClock.pkg.min.js' : 'js/dist/pClock.pkg.js'
+          'dist/js/pClock.pkg.min.js' : 'dist/js/pClock.pkg.js'
         }
       },
     },
@@ -160,11 +160,11 @@ module.exports = function(grunt) {
         tasks: [ 'string-replace', 'copy:dist' ]
       },
       scripts: {
-        files: 'js/*.js',
-        tasks: [ 'jshint:scripts' , 'concat:scripts', 'uglify:scripts', 'copy:dist', 'string-replace', 'copy:distSrc' ]
+        files: './js/*.js',
+        tasks: [ 'jshint:scripts' , 'concat:scripts', 'copy:dist', 'uglify:scripts', 'string-replace', 'copy:distSrc' ]
       },
       css: {
-        files: '**/*.css',
+        files: './css/**/*.css',
         tasks: [ 'copy:dist', 'cssmin', 'copy:dist' ]
       }
     },
@@ -185,7 +185,7 @@ module.exports = function(grunt) {
   grunt.registerTask(
     'default',
     'Runs linting on Javascript, concats and uflifys the js',
-    [ 'jshint', 'concat', 'cssmin', 'copy:dist', 'uglify', 'string-replace', 'copy:distSrc' ]
+    [ 'jshint', 'concat', 'cssmin', 'copy:dist', 'uglify:scripts', 'string-replace', 'copy:distSrc' ]
   );
 
   //////////////////////////////

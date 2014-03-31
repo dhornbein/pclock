@@ -11,11 +11,14 @@
     this.paper = new Raphael( this.element, this.options.w, this.options.h );
     // some tweaking
     this.defineCustomRaphaelAttributes();
+    this.renderChrome();
   };
 
   pClock.Renderer.prototype.options = {
     defaultColor: "#ff0000",
+    chromeColor: "#99a",
     strokeWidth: 10,
+    chromeRadiusMod: 15,
     w: window.innerWidth,
     h: window.innerHeight,
     r: 15,
@@ -38,34 +41,42 @@
   };
 
   pClock.Renderer.prototype.renderSpecies = function(sp, speciesIndex){
-    var events = sp.getEvents();
-    var r = this.options.r;
-    var slug = pClock.util.slugify(sp.name);
+    var events, r, center, slug;
+    events = sp.getEvents();
+    r = this.options.r;
+    center = this.options.center;
+    slug = pClock.util.slugify(sp.name);    
     for( var speciesEvent in events ) {
       var eventElement = this.paper.path().attr({
         "stroke": "#" + sp.color,
         "stroke-width": this.options.strokeWidth
       }).attr({
         arc: [
-          this.options.center.x,
-          this.options.center.y,
-            r * speciesIndex,
+          center.x,
+          center.y,
+          r * speciesIndex,
           events[speciesEvent].start,
           events[speciesEvent].end
         ]
       });
-
       eventElement.node.setAttribute("class", slug );
-
       sp.instantiateEventHandlers( eventElement );
     }
   };
 
-  pClock.Renderer.prototype.renderChrome = function( speciesIndex ){
-    var r = this.options.r;
-    var center = this.paper.circle(this.options.center.x, this.options.center.y, 5).attr({fill: "#99A", "stroke-width": 0});
-    var container = this.paper.circle(this.options.center.x, this.options.center.y, r * speciesIndex).attr({stroke: "#99A", "stroke-width": 1});
-    var containerClock = this.paper.path().attr({stroke: "#99A", "stroke-width": 10}).attr({arc: [this.options.center.x, this.options.center.y, r * speciesIndex, "1/1/2014", Date()]});
+  pClock.Renderer.prototype.renderChrome = function(){
+    var r, center, chromeColor, chromeRadiusMod;
+    r = this.options.r;
+    center = this.options.center;
+    chromeColor = this.options.chromeColor;
+    chromeRadiusMod = this.options.chromeRadiusMod;
+
+    // center
+    this.paper.circle(center.x, center.y, 5).attr({fill: chromeColor, "stroke-width": 0});
+    // container
+    this.paper.circle(center.x, center.y, r * chromeRadiusMod ).attr({stroke: chromeColor, "stroke-width": 1});
+    // clock
+    this.paper.path().attr({stroke: chromeColor, "stroke-width": 10}).attr({arc: [this.options.center.x, this.options.center.y, r * chromeRadiusMod, "1/1/2014", Date()]});
     var months = [];
     var i = 0;
     while (i++ < 13){
@@ -74,7 +85,7 @@
         .attr({arc: [
           this.options.center.x,
           this.options.center.y,
-          r * speciesIndex + 10,
+          r * chromeRadiusMod,
           i + "/1/2014",
           i + "/2/2014"
         ]});

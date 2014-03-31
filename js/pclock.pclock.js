@@ -47,8 +47,6 @@
       // we could refactor to have a renderAll Species and render them all at once
       // after we've logged them all... that would probably be better
     }
-    // this renders the clock face
-    this.renderer.renderChrome( i );
   }
 
 
