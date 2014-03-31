@@ -12,9 +12,9 @@
     // creates a slug out of any string
     slugify: function( aString ){
       var string = aString;
-      string.toLowerCase();
-      string.replace(/[^a-z0-9]+/g, '-');
-      string.replace(/^-|-$/g, '');
+      string = string.toLowerCase();
+      string = string.replace(/[^a-z0-9]+/g, '-');
+      string = string.replace(/^-|-$/g, '');
       return string;
     }
   };

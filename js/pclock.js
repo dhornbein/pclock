@@ -9,7 +9,13 @@
         // ok then, stop running initapp... 
         clearInterval( pClock.dataLoadInterval );
         // lets create the pClock
-        new pClock.PClock( document.getElementById('pClock'), pClock.data );
+        // demonstrate custom options
+        var rendererOptions = {
+          r: 20
+        }
+        var renderer = new pClock.Renderer( document.getElementById('pClock'), rendererOptions );
+        var pclock = new pClock.PClock( pClock.data );
+        pclock.setRenderer( renderer );
       }
     }
 

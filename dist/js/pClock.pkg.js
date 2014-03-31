@@ -9,7 +9,13 @@
         // ok then, stop running initapp... 
         clearInterval( pClock.dataLoadInterval );
         // lets create the pClock
-        new pClock.PClock( document.getElementById('pClock'), pClock.data );
+        // demonstrate custom options
+        var rendererOptions = {
+          r: 20
+        }
+        var renderer = new pClock.Renderer( document.getElementById('pClock'), rendererOptions );
+        var pclock = new pClock.PClock( pClock.data );
+        pclock.setRenderer( renderer );
       }
     }
 
@@ -34,21 +40,28 @@
 (function(pClock){
 
   // Class PClock
-  pClock.PClock = function( display, data, options ) {
+  pClock.PClock = function( data, options ) {
     // set up options
     this.options = pClock.util.merge( this.options, options ); 
     this.species = {}; // an object of species we're tracking on this clock
     this.setData( data ); // using a getter to set the data, in case we need to do more than just direct copy one day
     // we instantiate the renderer instance
-    this.renderer = new pClock.Renderer( display, this.options.renderer );
     // build it out
     this.buildSpecies();
     // 
   }
 
-  pClock.PClock.prototype.options = {
-    // nothing here but allows us to pass options to render from pclock.js
-    renderer: {}
+  pClock.PClock.prototype.setRenderer = function( renderer ){
+    this.renderer = renderer;
+    this.renderAllSpecies();
+  }
+
+  pClock.PClock.prototype.renderAllSpecies = function(){
+    for( var i=0; i < this.data.length; i++ ){
+      // if this block gets more complex we break it out into renderSpecies
+      var key = pClock.util.slugify(this.data[i].name);
+      this.renderer.renderSpecies( this.species[key], i );
+    }
   }
 
   pClock.PClock.prototype.constructor = pClock.PClock;
@@ -69,7 +82,6 @@
       // tell the renderer to render it
       // we could refactor to have a renderAll Species and render them all at once
       // after we've logged them all... that would probably be better
-      this.renderer.renderSpecies( sp, i );
     }
   }
 
@@ -237,9 +249,9 @@
     // creates a slug out of any string
     slugify: function( aString ){
       var string = aString;
-      string.toLowerCase();
-      string.replace(/[^a-z0-9]+/g, '-');
-      string.replace(/^-|-$/g, '');
+      string = string.toLowerCase();
+      string = string.replace(/[^a-z0-9]+/g, '-');
+      string = string.replace(/^-|-$/g, '');
       return string;
     }
   };
