@@ -72,15 +72,11 @@
     chromeColor = this.options.chromeColor;
     chromeRadiusMod = this.options.chromeRadiusMod;
     // center
-    console.log("a");
     this.paper.circle(center.x, center.y, 5).attr({fill: chromeColor, "stroke-width": 0});
     // container
-    console.log("b");
     this.paper.circle(center.x, center.y, r * chromeRadiusMod ).attr({stroke: chromeColor, "stroke-width": 1});
     // clock
-    console.log("c");
     this.paper.path().attr({stroke: chromeColor, "stroke-width": 10}).attr({arc: [this.options.center.x, this.options.center.y, r * chromeRadiusMod, "1/1/2014", Date()]});
-    console.log("d");
     var months = [];
     var i = 1;
     // months
