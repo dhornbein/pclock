@@ -2,11 +2,11 @@
   // Instantiate things once the dom is ready
   document.addEventListener("DOMContentLoaded", function() {
 
-    // This gets things started 
+    // This gets things started
     pClock.initialize = function(){
       // only if we have the data... see below
       if( pClock.data ) {
-        // ok then, stop running initapp... 
+        // ok then, stop running initapp...
         clearInterval( pClock.dataLoadInterval );
         // lets create the pClock
         // demonstrate custom options
@@ -106,12 +106,12 @@
   pClock.Renderer.prototype.options = {
     defaultColor: "#ff0000",
     strokeWidth: 10,
-    w: window.screen.availWidth,
-    h: window.screen.availHeight,
-    r: 20,
+    w: window.innerWidth,
+    h: window.innerHeight,
+    r: 15,
     center: {
-      x: window.screen.availWidth * 0.5,
-      y: window.screen.availHeight * 0.45,
+      x: window.innerWidth * 0.5,
+      y: window.innerHeight * 0.45,
     }
   };
 
