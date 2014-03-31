@@ -133,6 +133,7 @@
 
   pClock.Renderer.prototype.renderSpecies = function(sp, speciesIndex){
     var events, r, center, slug;
+    // console.log( speciesIndex );
     events = sp.getEvents();
     r = this.options.r;
     center = this.options.center;
@@ -161,29 +162,37 @@
     center = this.options.center;
     chromeColor = this.options.chromeColor;
     chromeRadiusMod = this.options.chromeRadiusMod;
-
     // center
+    console.log("a");
     this.paper.circle(center.x, center.y, 5).attr({fill: chromeColor, "stroke-width": 0});
     // container
+    console.log("b");
     this.paper.circle(center.x, center.y, r * chromeRadiusMod ).attr({stroke: chromeColor, "stroke-width": 1});
     // clock
+    console.log("c");
     this.paper.path().attr({stroke: chromeColor, "stroke-width": 10}).attr({arc: [this.options.center.x, this.options.center.y, r * chromeRadiusMod, "1/1/2014", Date()]});
+    console.log("d");
     var months = [];
-    var i = 0;
-    while (i++ < 13){
+    var i = 1;
+    // months
+    while (i < 13){
+      // console.log( center.x );
       months[i] = this.paper.path()
-        .attr({stroke: "#ccc", "stroke-width": 5})
-        .attr({arc: [
-          this.options.center.x,
-          this.options.center.y,
-          r * chromeRadiusMod,
-          i + "/1/2014",
-          i + "/2/2014"
+        .attr({
+          "stroke": "#ccc",
+          "stroke-width": 5
+        })
+        .attr({
+          arc: [
+            center.x,
+            center.y,
+            r * chromeRadiusMod,
+            i + "/1/2014",
+            i + "/2/2014"
         ]});
       months[i].node.setAttribute("class","month-" + i);
     }
   };
-
 
   pClock.Renderer.prototype.describeArc = function( x, y, radius, startAngle, endAngle ){
     var start, end, arcSweep, d;
