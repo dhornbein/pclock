@@ -191,6 +191,7 @@
             i + "/2/2014"
         ]});
       months[i].node.setAttribute("class","month-" + i);
+      i++;
     }
   };
 
