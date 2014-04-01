@@ -52,6 +52,8 @@
     //
   }
 
+  pClock.PClock.prototype.constructor = pClock.PClock;
+
   pClock.PClock.prototype.setRenderer = function( renderer ){
     this.renderer = renderer;
     this.renderAllSpecies();
@@ -64,8 +66,6 @@
       this.renderer.renderSpecies( this.species[key], i );
     }
   }
-
-  pClock.PClock.prototype.constructor = pClock.PClock;
 
   pClock.PClock.prototype.setData = function(data){
       this.data = data;
@@ -86,7 +86,8 @@
     }
   }
 
-
+  
+  
 })( window.pClock = window.pClock || {} );
 
 (function(pClock){
@@ -132,14 +133,14 @@
   };
 
   pClock.Renderer.prototype.renderSpecies = function(sp, speciesIndex){
-    var events, r, center, slug;
+    var phenophases, r, center, slug;
     // console.log( speciesIndex );
-    events = sp.getEvents();
+    phenophases = sp.getPhenophases();
     r = this.options.r;
     center = this.options.center;
     slug = pClock.util.slugify(sp.name);    
-    for( var speciesEvent in events ) {
-      var eventElement = this.paper.path().attr({
+    for( var phenophase in phenophases ) {
+      var phenophaseElement = this.paper.path().attr({
         "stroke": "#" + sp.color,
         "stroke-width": this.options.strokeWidth
       }).attr({
@@ -147,12 +148,12 @@
           center.x,
           center.y,
           r * speciesIndex,
-          events[speciesEvent].start,
-          events[speciesEvent].end
+          phenophases[phenophase].start,
+          phenophases[phenophase].end
         ]
       });
-      eventElement.node.setAttribute("class", slug );
-      sp.instantiateEventHandlers( eventElement );
+      phenophaseElement.node.setAttribute("class", slug );
+      sp.instantiateEventHandlers( phenophaseElement );
     }
   };
 
@@ -234,7 +235,7 @@
     this.commonName = data.commonName;
     this.description = data.description;
     this.color = data.color;
-    this.events = data.events;
+    this.phenophases = data.events;
   }
 
   pClock.Species.prototype.constructor = pClock.Species;
@@ -248,8 +249,8 @@
     }
   }
 
-  pClock.Species.prototype.getEvents = function(){
-    return this.events;
+  pClock.Species.prototype.getPhenophases = function(){
+    return this.phenophases;
   }
 
   //////////////////////

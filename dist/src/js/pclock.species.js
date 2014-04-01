@@ -12,7 +12,7 @@
     this.commonName = data.commonName;
     this.description = data.description;
     this.color = data.color;
-    this.events = data.events;
+    this.phenophases = data.events;
   }
 
   pClock.Species.prototype.constructor = pClock.Species;
@@ -26,8 +26,8 @@
     }
   }
 
-  pClock.Species.prototype.getEvents = function(){
-    return this.events;
+  pClock.Species.prototype.getPhenophases = function(){
+    return this.phenophases;
   }
 
   //////////////////////

@@ -15,6 +15,8 @@
     //
   }
 
+  pClock.PClock.prototype.constructor = pClock.PClock;
+
   pClock.PClock.prototype.setRenderer = function( renderer ){
     this.renderer = renderer;
     this.renderAllSpecies();
@@ -27,8 +29,6 @@
       this.renderer.renderSpecies( this.species[key], i );
     }
   }
-
-  pClock.PClock.prototype.constructor = pClock.PClock;
 
   pClock.PClock.prototype.setData = function(data){
       this.data = data;
@@ -49,5 +49,6 @@
     }
   }
 
-
+  
+  
 })( window.pClock = window.pClock || {} );

@@ -41,14 +41,14 @@
   };
 
   pClock.Renderer.prototype.renderSpecies = function(sp, speciesIndex){
-    var events, r, center, slug;
+    var phenophases, r, center, slug;
     // console.log( speciesIndex );
-    events = sp.getEvents();
+    phenophases = sp.getPhenophases();
     r = this.options.r;
     center = this.options.center;
     slug = pClock.util.slugify(sp.name);    
-    for( var speciesEvent in events ) {
-      var eventElement = this.paper.path().attr({
+    for( var phenophase in phenophases ) {
+      var phenophaseElement = this.paper.path().attr({
         "stroke": "#" + sp.color,
         "stroke-width": this.options.strokeWidth
       }).attr({
@@ -56,12 +56,12 @@
           center.x,
           center.y,
           r * speciesIndex,
-          events[speciesEvent].start,
-          events[speciesEvent].end
+          phenophases[phenophase].start,
+          phenophases[phenophase].end
         ]
       });
-      eventElement.node.setAttribute("class", slug );
-      sp.instantiateEventHandlers( eventElement );
+      phenophaseElement.node.setAttribute("class", slug );
+      sp.instantiateEventHandlers( phenophaseElement );
     }
   };
 
