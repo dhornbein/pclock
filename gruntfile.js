@@ -12,13 +12,6 @@ module.exports = function(grunt) {
     // Project metadata.
     pkg: grunt.file.readJSON('package.json'),
 
-    concat: {
-      scripts: {
-        src: ["js/**/*.js"],
-        dest: 'dist/js/pClock.pkg.js'
-      }
-    },
-
     jshint: {
       options: {
         curly: true,
@@ -37,35 +30,15 @@ module.exports = function(grunt) {
         globals: {
           console: true,
           Raphael: true,
-          require: true
+          require: true,
+          fs: true
         }
       },
       gruntfile: {
         src: 'gruntfile.js'
       },
-      scripts: {
+      js: {
         src: 'js/*.js'
-      }
-    },
-
-    uglify:{
-      scripts:{
-        options: {
-          compress: true,
-          mangle: true,
-          report: 'gzip'
-        },
-        files:{
-          'dist/js/pClock.pkg.min.js' : 'dist/js/pClock.pkg.js'
-        }
-      },
-    },
-
-    cssmin: {
-      combine: {
-        files: {
-          'dist/css/styles.min.css': ['css/*.css']
-        }
       }
     },
 
@@ -90,57 +63,22 @@ module.exports = function(grunt) {
       }
     },
 
-    // should eventually use either some moustache template, or a config variable
-    // rather than just string replace to switch between production and dev scripts
-    'string-replace': {
-      inline: {
-        files: {
-          'dist/index.html': 'dist/index.html'
-        },
-        options: {
-          replacements: [
-            {
-              pattern: '<!--start PROD css-imports',
-              replacement: '<!--start PROD css-imports-->'
-            },
-            {
-              pattern: 'end PROD css-imports-->',
-              replacement: '<!--end PROD css-imports-->'
-            },
-            {
-              pattern: '<!--start DEV css-imports-->',
-              replacement: '<!--start DEV imports'
-            },
-            {
-              pattern: '<!--end DEV css-imports-->',
-              replacement: 'end DEV css-imports-->'
-            },
-            {
-              pattern: '<!--start PROD js-imports',
-              replacement: '<!--start PROD js-imports-->'
-            },
-            {
-              pattern: 'end PROD js-imports-->',
-              replacement: '<!--end PROD js-imports-->'
-            },
-            {
-              pattern: '<!--start DEV js-imports-->',
-              replacement: '<!--start DEV js-imports'
-            },
-            {
-              pattern: '<!--end DEV js-imports-->',
-              replacement: 'end DEV js-imports-->'
-            }
-          ]
-        }
+    useminPrepare: {
+      html: 'index.html',
+      options: {
+        dest: 'dist'
       }
+    },
+
+    usemin: {
+      html: 'dist/index.html'
     },
 
     connect: {
       server: {
         options: {
           port: settings.serverPort,
-          base: './',
+          base: '.',
           hostname: 'localhost',
           livereload: true
         }
@@ -157,15 +95,15 @@ module.exports = function(grunt) {
       },
       html: {
         files: '*.html',
-        tasks: [ 'string-replace', 'copy:dist' ]
+        tasks: [ 'useminPrepare', 'copy:dist', 'usemin', 'copy:distSrc' ]
       },
       scripts: {
         files: './js/*.js',
-        tasks: [ 'jshint:scripts' , 'concat:scripts', 'copy:dist', 'uglify:scripts', 'string-replace', 'copy:distSrc' ]
+        tasks: [ 'jshint:js' , 'copy:dist', 'useminPrepare', 'concat:generated', 'uglify:generated', 'copy:distSrc' ]
       },
       css: {
         files: './css/**/*.css',
-        tasks: [ 'copy:dist', 'cssmin', 'copy:dist' ]
+        tasks: [ 'useminPrepare', 'cssmin:generated', 'copy:dist', 'copy:distSrc' ]
       }
     },
 
@@ -181,19 +119,25 @@ module.exports = function(grunt) {
 
   });
 
-  // Default task.
+  // Default task eg. what happens when we simply run 'grunt'
   grunt.registerTask(
     'default',
     'Runs linting on Javascript, concats and uflifys the js',
-    [ 'jshint', 'concat', 'cssmin', 'copy:dist', 'uglify:scripts', 'string-replace', 'copy:distSrc' ]
+    [ 'serve' ]
   );
 
   //////////////////////////////
   // Server Task
-  //////////////////////////////
+  //
   grunt.registerTask('serve', 'start the dev server', function(){
-      grunt.task.run('connect');
-      grunt.task.run('parallel:watch');
+    // it's the tmp file, so we just create it when we run serve  
+    grunt.file.mkdir(".tmp");
+    // do a first run build
+    grunt.task.run(['useminPrepare','concat:generated','uglify:generated','cssmin:generated','copy:dist','usemin','copy:distSrc']);
+    // run the server task
+    grunt.task.run('connect');
+    // watch for changes
+    grunt.task.run('parallel:watch');
   });
 
 };

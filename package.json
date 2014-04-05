@@ -3,18 +3,9 @@
   "version": "0.1.0",
   "description": "Phenological clock app",
   "contributors": [
-    {
-      "name": "Tega Brain",
-      "email": "tega.brain@gmail.com"
-    },
-    {
-      "name": "Drew Hornbein",
-      "email": "dhornbein@gmail.com"
-    },
-    {
-      "name": "Thiago de Mello Bueno",
-      "email": "thiago@madeofpeople.org"
-    }
+    "Tega Brain <tega.brain@gmail.com>",
+    "Drew Hornbein <dhornbein@gmail.com>",
+    "Thiago de Mello Bueno <thiago@madeofpeople.org>"
   ],
   "main": "gruntfile.js",
   "scripts": {
@@ -34,9 +25,18 @@
     "grunt-contrib-nodeunit": "~0.2.0",
     "load-grunt-tasks": "^0.4.0",
     "grunt-contrib-cssmin": "~0.9.0",
-    "grunt-string-replace": "^0.2.7",
     "grunt-contrib-connect": "^0.7.1",
     "grunt-parallel": "^0.3.1",
-    "grunt-cli": "^0.1.13"
-  }
+    "grunt-cli": "^0.1.13",
+    "grunt-usemin": "^2.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dhornbein/pclock.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/dhornbein/pclock/issues"
+  },
+  "homepage": "https://github.com/dhornbein/pclock"
 }
