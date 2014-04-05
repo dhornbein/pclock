@@ -8,16 +8,13 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
 
-    <!--start PROD css-imports
-    <link rel="stylesheet" href="css/styles.min.css">
-    end PROD css-imports-->
-
-    <!--start DEV css-imports-->
-    <link rel="stylesheet" href="css/styles.css">
-    <!--end DEV css-imports-->
+  <!-- build:css css/styles.min.css -->
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- endbuild -->
 
 </head>
 <body>
+
   <div id="main" role="main">
 
     <div id="pClock">
@@ -33,24 +30,17 @@
   <footer id="footer">
   </footer>
 
-
-
     <script src="libraries/raphael/raphael-min.js"></script>
 
     <!-- keep these comments here they are needed for grunt -->
-    
-    <!--start PROD js-imports
-    <script src="js/pClock.pkg.min.js"></script>
-    end PROD js-imports-->
-
-    <!--start DEV js-imports-->
+    <!-- build:js js/pClock.pkg.min.js -->
     <script src="js/pclock.utils.js"></script>
     <script src="js/pclock.species.js"></script>
     <script src="js/pclock.renderer.js"></script>
     <script src="js/pclock.pclock.js"></script>
     <script src="js/pclock.js"></script>
     <script src="js/plugins.js"></script>
-    <!--end DEV js-imports-->
+    <!-- endbuild -->
 
     <!-- load data from google doc and call phenClockGDImport -->
     <script>
