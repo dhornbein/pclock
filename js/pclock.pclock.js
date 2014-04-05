@@ -12,6 +12,7 @@
     // we instantiate the renderer instance
     // build it out
     this.buildSpecies();
+    this.initUI();
     //
   }
 
@@ -49,6 +50,14 @@
     }
   }
 
-  
-  
+  pClock.PClock.prototype.initUI = function(){
+    this.zoomInput = document.getElementById('zoomlevel');
+    this.zoomInput.onchange = this.zoomClock.bind(this);
+  }
+
+  pClock.PClock.prototype.zoomClock = function(){
+    console.log( "zoomClock", this.zoomInput.value );
+    this.renderer.setZoom( this.zoomInput.value );
+  }
+
 })( window.pClock = window.pClock || {} );

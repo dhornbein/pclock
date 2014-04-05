@@ -128,4 +128,19 @@
     }
   };
 
+  pClock.Renderer.prototype.setZoom = function( val ) {
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    console.log( "setZoom", val );
+    // this.paper.transform("s"+val);
+//    this.paper.scale( val, val, 0, 0 );
+//    this.paper.setViewBox( w*0.5*val, h*0.5*val, w * val, h * val);
+    var scale = {
+      x: w * val,
+      y: h * val
+    }
+    this.paper.setViewBox( (w-scale.x)*0.5, (h-scale.y)*0.5, scale.x, scale.y );
+  }
+
+
 })( window.pClock = window.pClock || {} );
