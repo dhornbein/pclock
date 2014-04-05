@@ -12,3 +12,6 @@
 *.tgz
 
 node_modules
+
+
+.tmp
