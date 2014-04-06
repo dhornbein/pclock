@@ -16,6 +16,19 @@
       string = string.replace(/[^a-z0-9]+/g, '-');
       string = string.replace(/^-|-$/g, '');
       return string;
+    },
+    daysInYear: function( year ) {
+      // returns days in the current year (adjusts for leap year)
+      if(year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
+          // Leap year
+          return 366;
+      } else {
+          // Not a leap year
+          return 365;
+      }
+    },
+    isLeapYear: function( year ) {
+      return new Date(year, 1, 29).getMonth() == 1;
     }
   };
 

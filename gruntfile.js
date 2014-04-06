@@ -22,7 +22,7 @@ module.exports = function(grunt) {
         asi: true,
         sub: true,
         undef: true,
-        unused: true,
+        // unused: true,
         boss: true,
         eqnull: true,
         browser: true,

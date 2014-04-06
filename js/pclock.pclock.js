@@ -7,6 +7,7 @@
   pClock.PClock = function( data, options ) {
     // set up options
     this.options = pClock.util.merge( this.options, options );
+    this.zoomLevel = 0;
     this.species = {}; // an object of species we're tracking on this clock
     this.setData( data ); // using a getter to set the data, in case we need to do more than just direct copy one day
     // we instantiate the renderer instance
@@ -20,15 +21,7 @@
 
   pClock.PClock.prototype.setRenderer = function( renderer ){
     this.renderer = renderer;
-    this.renderAllSpecies();
-  }
-
-  pClock.PClock.prototype.renderAllSpecies = function(){
-    for( var i=0; i < this.data.length; i++ ){
-      // if this block gets more complex we break it out into renderSpecies
-      var key = pClock.util.slugify(this.data[i].name);
-      this.renderer.renderSpecies( this.species[key], i );
-    }
+    this.renderer.renderPhenophases( this.species );
   }
 
   pClock.PClock.prototype.setData = function(data){
@@ -44,20 +37,20 @@
       var sp = new pClock.Species( this.data[i], this, this.renderer );
       // put it into an object with the slug as keys.
       this.species[ slug ] = sp;
-      // tell the renderer to render it
-      // we could refactor to have a renderAll Species and render them all at once
-      // after we've logged them all... that would probably be better
     }
   }
 
   pClock.PClock.prototype.initUI = function(){
-    this.zoomInput = document.getElementById('zoomlevel');
-    this.zoomInput.onchange = this.zoomClock.bind(this);
+    window.addWheelListener( document.body, this.onMouseWheel.bind( this ) );
   }
 
-  pClock.PClock.prototype.zoomClock = function(){
-    console.log( "zoomClock", this.zoomInput.value );
-    this.renderer.setZoom( this.zoomInput.value );
+  pClock.PClock.prototype.onMouseWheel = function(event){
+    // console.log( "onMouseWheel", event );
+    this.zoomDelta =  event.wheelDelta*0.02;
+    this.zoomLevel += this.zoomDelta;
+    this.zoomLevel = Math.max( this.zoomLevel, 1 );
+    console.log( this.zoomDelta, this.zoomLevel );
+    this.renderer.setZoom( this.zoomLevel );
   }
 
 })( window.pClock = window.pClock || {} );

@@ -6,16 +6,19 @@
   //
   pClock.Renderer = function( el, options ) {
     this.options = pClock.util.merge( this.options, options );
+    var w = this.options.w;
+    var h = this.options.h;
     this.element = el; // this is what our Raphael instance will draw onto.
     // instantiate the Raphael instance.
-    this.paper = new Raphael( this.element, this.options.w, this.options.h );
-    // some tweaking
+    console.log( this.element.querySelector("#chrome"), w , h );
+    this.chrome = new Raphael( this.element.querySelector("#chrome"), w, h );
+    this.paper = new Raphael( this.element.querySelector("#paper"), w, h );
+    // // some tweaking
     this.defineCustomRaphaelAttributes();
     this.renderChrome();
   };
 
   pClock.Renderer.prototype.options = {
-    defaultColor: "#ff0000",
     chromeColor: "#99a",
     strokeWidth: 10,
     chromeRadiusMod: 15,
@@ -32,15 +35,34 @@
 
   pClock.Renderer.prototype.defineCustomRaphaelAttributes = function(){
     var self = this;
-    var ca = this.paper.customAttributes.arc = function (x, y, radius, startDate, endDate) {
+    this.paper.customAttributes.arc = function (x, y, radius, startDate, endDate) {
       return {
         path: self.describeArc(x, y, radius, self.dateToDegree(startDate), self.dateToDegree(endDate))
       }
     };
-    return ca;
+    this.chrome.customAttributes.arc = function (x, y, radius, startDate, endDate) {
+      return {
+        path: self.describeArc(x, y, radius, self.dateToDegree(startDate), self.dateToDegree(endDate))
+      }
+    };
+  };
+  
+  pClock.Renderer.prototype.renderPhenophases = function( speciesCollection, zoom ) {
+    zoom = zoom*0.1 || 1;
+    this.dataSet = speciesCollection;
+    var start = new Date().getTime();
+    var i = 0;
+    for( var species in speciesCollection ) {
+      this.renderSpeciesPhenophases( speciesCollection[species], i, zoom );
+      i++;
+    }
+    var end = new Date().getTime();
+    var time = end - start;
+    console.log("renderSpecies timeelapsed", time );
+
   };
 
-  pClock.Renderer.prototype.renderSpecies = function(sp, speciesIndex){
+  pClock.Renderer.prototype.renderSpeciesPhenophases = function(sp, speciesIndex, zoom ){
     var phenophases, r, center, slug;
     // console.log( speciesIndex );
     phenophases = sp.getPhenophases();
@@ -50,6 +72,7 @@
     for( var phenophase in phenophases ) {
       var phenophaseElement = this.paper.path().attr({
         "stroke": "#" + sp.color,
+        "stroke-linecap": "round",
         "stroke-width": this.options.strokeWidth
       }).attr({
         arc: [
@@ -66,23 +89,44 @@
   };
 
   pClock.Renderer.prototype.renderChrome = function(){
-    var r, center, chromeColor, chromeRadiusMod;
+    var r, center, chromeColor, chromeRadiusMod, currentDate, janFirst;
+    currentDate = new Date();
+    janFirst = new Date( currentDate.getFullYear(),0,1);
     r = this.options.r;
     center = this.options.center;
     chromeColor = this.options.chromeColor;
     chromeRadiusMod = this.options.chromeRadiusMod;
     // center
-    this.paper.circle(center.x, center.y, 5).attr({fill: chromeColor, "stroke-width": 0});
-    // container
-    this.paper.circle(center.x, center.y, r * chromeRadiusMod ).attr({stroke: chromeColor, "stroke-width": 1});
+    this.chrome.circle(center.x, center.y, 5).attr({
+      "fill": chromeColor, 
+      "stroke-width": 0
+    });
+    // // container
+    this.chrome.circle(center.x, center.y, r * chromeRadiusMod ).attr({
+      "stroke": chromeColor,
+      "stroke-width": 1
+    });
     // clock
-    this.paper.path().attr({stroke: chromeColor, "stroke-width": 10}).attr({arc: [this.options.center.x, this.options.center.y, r * chromeRadiusMod, "1/1/2014", Date()]});
+    this.chrome.path().attr({
+      "stroke": "#fafafa",
+      "stroke-linecap": "round",
+      "stroke-width": 10
+    }).attr({
+      arc: [
+        center.x,
+        center.y,
+        r * chromeRadiusMod, 
+        janFirst,
+        Date()
+      ]
+    });
     var months = [];
     var i = 1;
     // months
+    console.log( ":::",center.x,center.y,chromeRadiusMod );
     while (i < 13){
       // console.log( center.x );
-      months[i] = this.paper.path()
+      months[i] = this.chrome.path()
         .attr({
           "stroke": "#ccc",
           "stroke-width": 5
@@ -113,10 +157,12 @@
   };
 
   pClock.Renderer.prototype.dateToDegree = function( date ) {
-    var currentDate = new Date(date);
-    var janFirst = new Date( currentDate.getFullYear(),0,1);
-    var dayOfYear = Math.ceil( ( currentDate - janFirst ) / 86400000 );
-    var ratio = dayOfYear / 365; // do we really need to worry about leap years? - yes!
+    var currentDate, currentYear, janFirst, dayOfYear, ratio;
+    currentDate = new Date(date);
+    currentYear = currentDate.getFullYear();
+    janFirst = new Date( currentYear, 0, 1);
+    dayOfYear = Math.ceil( ( currentDate - janFirst ) /  pClock.MILLISECONDS_IN_A_DAY );
+    ratio = dayOfYear / pClock.util.daysInYear( currentYear );
     return ratio * 360;
   };
 
@@ -128,18 +174,16 @@
     }
   };
 
-  pClock.Renderer.prototype.setZoom = function( val ) {
+  pClock.Renderer.prototype.setZoom = function( scaleFactor ) {
     var w = window.innerWidth;
     var h = window.innerHeight;
-    console.log( "setZoom", val );
-    // this.paper.transform("s"+val);
-//    this.paper.scale( val, val, 0, 0 );
-//    this.paper.setViewBox( w*0.5*val, h*0.5*val, w * val, h * val);
     var scale = {
-      x: w * val,
-      y: h * val
+      x: w * scaleFactor,
+      y: h * scaleFactor
     }
+    this.paper.clear();
     this.paper.setViewBox( (w-scale.x)*0.5, (h-scale.y)*0.5, scale.x, scale.y );
+    this.renderPhenophases( this.dataSet, scaleFactor );
   }
 
 

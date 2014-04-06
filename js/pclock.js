@@ -1,7 +1,8 @@
 (function(pClock){
   // Instantiate things once the dom is ready
   document.addEventListener("DOMContentLoaded", function() {
-
+    // constants
+    pClock.MILLISECONDS_IN_A_DAY = 86400000; 
     // This gets things started 
     pClock.initialize = function(){
       // only if we have the data... see below
@@ -19,7 +20,6 @@
         pclock.setRenderer( renderer );
       }
     }
-
     // do we have the data?
     if( pClock.data ) {
       // then lets do this
