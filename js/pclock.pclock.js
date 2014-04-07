@@ -1,4 +1,3 @@
-
 // see http://www.andismith.com/blog/2011/10/self-executing-anonymous-revealing-module-pattern/
 
 (function(pClock){
@@ -14,7 +13,6 @@
     // build it out
     this.buildSpecies();
     this.initUI();
-    //
   }
 
   pClock.PClock.prototype.constructor = pClock.PClock;
@@ -45,11 +43,9 @@
   }
 
   pClock.PClock.prototype.onMouseWheel = function(event){
-    // console.log( "onMouseWheel", event );
-    this.zoomDelta =  event.wheelDelta*0.02;
+    this.zoomDelta =  event.wheelDeltaY*0.02;
     this.zoomLevel += this.zoomDelta;
-    this.zoomLevel = Math.max( this.zoomLevel, 1 );
-    console.log( this.zoomDelta, this.zoomLevel );
+    this.zoomLevel = Math.max( this.zoomLevel, -3 );
     this.renderer.setZoom( this.zoomLevel );
   }
 

@@ -2,7 +2,6 @@
   // Instantiate things once the dom is ready
   document.addEventListener("DOMContentLoaded", function() {
     // constants
-    pClock.MILLISECONDS_IN_A_DAY = 86400000; 
     // This gets things started 
     pClock.initialize = function(){
       // only if we have the data... see below
@@ -28,9 +27,5 @@
       // well lets run initApp every 200ms....
       pClock.dataLoadInterval = setInterval( pClock.initApp, 200 );
     }
-
   });
-
 })(window.pClock = window.pClock || {} );
-
-

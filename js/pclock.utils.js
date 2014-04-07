@@ -1,6 +1,7 @@
 (function(pClock){
 
   pClock.util = {
+    MILLISECONDS_IN_A_DAY: 86400000,
     // copies keys from one object to another and overrites existing keys
     // a shallow copy
     merge: function( destObj, sourceObj ){
@@ -19,7 +20,7 @@
     },
     daysInYear: function( year ) {
       // returns days in the current year (adjusts for leap year)
-      if(year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
+      if(pClock.util.isLeapYear()) {
           // Leap year
           return 366;
       } else {
