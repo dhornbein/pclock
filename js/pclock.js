@@ -14,9 +14,9 @@
           r: 20,
           chromeRadiusMod: 15
         }
-        var renderer = new pClock.Renderer( document.getElementById('pClock'), rendererOptions );
-        var pclock = new pClock.PClock( pClock.data );
-        pclock.setRenderer( renderer );
+        // instantiate
+        pClock.renderer = new pClock.Renderer( document.getElementById('pClock'), rendererOptions );
+        pClock.pClock = new pClock.PClock( pClock.data );
       }
     }
     // do we have the data?

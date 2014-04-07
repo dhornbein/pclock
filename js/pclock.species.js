@@ -20,12 +20,10 @@
   pClock.Species.prototype.constructor = pClock.Species;
 
   pClock.Species.prototype.getData = function(){
-    return {
-      name: this.name,
-      commonName: this.commonName,
-      description: this.description,
-      color: this.color
-    }
+    // we don't need this function yet, 
+    // but it's good to have in case we want to send out some specific set of data,
+    // or do anything to it on it's way out.
+    return this.data;
   }
 
   pClock.Species.prototype.getPhenophases = function(){
@@ -55,25 +53,29 @@
     }
   }
 
-  pClock.Species.prototype.assignSpeciesEventMouseOver =  function( eventElement ) {
+  pClock.Species.prototype.assignSpeciesEventMouseOver =  function( el ) {
     var data = this.getData();
     // these are raphael elements, not dom elements...
-    eventElement.mouseover( function( e ){
+    el.mouseover( function( e ){
       // e.clientX and e.clientY are the mouse coords
       console.log( "mouseover", data.name, e );
     });
   }
 
-  pClock.Species.prototype.assignSpeciesEventClick = function( eventElement ) {
+  pClock.Species.prototype.assignSpeciesEventClick = function( el ) {
     var data = this.getData();
     // test to see if tocuh and click both get fired.
     // these are raphael elements, not dom elements...
-    eventElement.touchend( function(e){
+    el.touchend( function(e){
       console.log( "touched", data.name, e );
     });
-    eventElement.click( function( e ){
+    el.click( function( e ){
       // e.clientX and e.clientY are the mouse coords
-      console.log( "clicked", data.name, e );
+      console.log( "clicked", data );
+      // set this to a broadcast so we don't have to have knowledge about who to send the event to 
+      // but just say "a phenophase was clicked and here's the data for it"
+      // which makes me think we might want to introduce a pClock.Phenophase class 
+      pClock.pClock.phenophaseClicked( data, el );
     });
   }
   

@@ -13,6 +13,7 @@
     // build it out
     this.buildSpecies();
     this.initUI();
+    this.setRenderer();
   }
 
   pClock.PClock.prototype.constructor = pClock.PClock;
@@ -22,7 +23,7 @@
   }
 
   pClock.PClock.prototype.setRenderer = function( renderer ){
-    this.renderer = renderer;
+    this.renderer = renderer || pClock.renderer;
     this.renderer.renderPhenophases( this.species, this.options.initialZoom );
   }
 
@@ -36,6 +37,7 @@
     for ( var i=0; i < this.data.length; i++) {
       var slug = pClock.util.slugify( this.data[i].name );
       // create a species' instance.
+      this.data[i]['slug'] = slug;
       var sp = new pClock.Species( this.data[i], this, this.renderer );
       // put it into an object with the slug as keys.
       this.species[ slug ] = sp;
@@ -53,4 +55,9 @@
     this.renderer.setZoom( this.zoomLevel );
   }
 
+  pClock.PClock.prototype.phenophaseClicked = function( data, element ){
+    console.log( data );
+    // discuss format for this
+    window.location.hash = data.slug;
+  }
 })( window.pClock = window.pClock || {} );

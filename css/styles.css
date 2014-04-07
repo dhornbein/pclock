@@ -20,13 +20,13 @@ body,
 #paper,
 #chrome {
 	position: absolute;
-	z-index: 10;
+	z-index: 20;
 	top:0;
 	left:0;
 }
 
 #chrome {
-	z-index: 20;
+	z-index: 10;
 }
 
 #dataOverlay {}
