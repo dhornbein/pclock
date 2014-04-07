@@ -1,19 +1,14 @@
 pClock
 ======
-
-To use the pClock itself just launch index.html in the dist/ folder. 
-
-dist/src holds the sources.
-
-To benefit from grunt automation, livereload, and all the newfangled fancyness* you will need to install dependencies.
-* = livereload includes jslinting, javascript concatenation and minification, and other wonders grunt has to offer.
+Say something about the phenoclock, 
+What is phenology
+Whys it great
+Goals of project
 
 
-Dev Dependencies
-============================
-The Phenological clock is mostly pure javascript, launch index.html in either the dist/ or the dist/src folder, and you're good to go. However some newfangled tools can make development more pleasant.
+### Team
 
-Namely
+### Dev Dependencies
 
 [Node.js](http://nodejs.org/)
 
@@ -22,8 +17,7 @@ Namely
 [grunt](https://www.gruntjs.com/)
 
 
-Dev Installation
-================
+### Installation
 
 Make sure nodejs and npm are installed (follow the links above)
 
