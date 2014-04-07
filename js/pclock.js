@@ -12,7 +12,7 @@
         // demonstrate custom options
         var rendererOptions = {
           r: 20,
-          chromeRadiusMod: pClock.data.length
+          chromeRadiusMod: 15
         }
         var renderer = new pClock.Renderer( document.getElementById('pClock'), rendererOptions );
         var pclock = new pClock.PClock( pClock.data );
