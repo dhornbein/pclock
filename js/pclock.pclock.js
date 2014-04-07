@@ -17,9 +17,13 @@
 
   pClock.PClock.prototype.constructor = pClock.PClock;
 
+  pClock.PClock.prototype.options = {
+    initialZoom: 1.5
+  }
+
   pClock.PClock.prototype.setRenderer = function( renderer ){
     this.renderer = renderer;
-    this.renderer.renderPhenophases( this.species );
+    this.renderer.renderPhenophases( this.species, this.options.initialZoom );
   }
 
   pClock.PClock.prototype.setData = function(data){

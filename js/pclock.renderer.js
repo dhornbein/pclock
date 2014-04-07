@@ -13,7 +13,7 @@
     this.chrome = new Raphael( this.element.querySelector("#chrome"), w, h );
     this.paper = new Raphael( this.element.querySelector("#paper"), w, h );
     // // some tweaking
-    window.onResize = this.onResize();
+    // window.onResize = this.onResize();
     this.defineCustomRaphaelAttributes();
     this.renderChrome();
   };
@@ -48,47 +48,53 @@
   };
   
   pClock.Renderer.prototype.renderPhenophases = function( speciesCollection, zoom ) {
+    // var s = new Date();
     zoom = zoom*0.1 || 1;
     var start, center, i;
-    this.dataSet = speciesCollection;
+    this.renderQueue = speciesCollection;
     start = new Date().getTime();
     center = this.options.center;
     i = 1;
     for( var species in speciesCollection ) {
       this.renderSpeciesPhenophases( speciesCollection[species], i, zoom );
       i++;
-      console.log(i);
     }
+    // var e = new Date();
+    // console.log("render took", e-s, "ms");
   };
 
-  pClock.Renderer.prototype.onResize = function(sp, speciesIndex, zoom ){
-    this.chrome.clear();
-    this.renderChrome();
-  };
+  pClock.Renderer.prototype.clearPaper = function(){
+    for( var species in this.renderQueue ) {
+      this.renderQueue[species].clear();
+    }
+    this.paper.clear();
+  }
+
+  // pClock.Renderer.prototype.onResize = function(sp, speciesIndex, zoom ){
+  //   this.chrome.clear();
+  //   this.renderChrome();
+  // };
 
   pClock.Renderer.prototype.renderSpeciesPhenophases = function(sp, speciesIndex, zoom ){
-    var phenophases, r, center, slug;
-    // console.log( speciesIndex );
+    var phenophases, r, center, slug, start, end;
     phenophases = sp.getPhenophases();
     r = Math.max( this.options.r * ( zoom * 0.05 * speciesIndex ), 6 );
     center = this.options.center;
-    slug = pClock.util.slugify(sp.name);    
+    slug = pClock.util.slugify(sp.name);
     for( var phenophase in phenophases ) {
-      var phenophaseElement = this.paper.path().attr({
-        "stroke": "#" + sp.color,
-        "stroke-linecap": "round",
-        "stroke-width": Math.max( this.options.strokeWidth * ( zoom * 0.075 * speciesIndex ), 3 )
-      }).attr({
-        arc: [
-          center.x,
-          center.y,
-          r * speciesIndex,
-          phenophases[phenophase].start,
-          phenophases[phenophase].end
-        ]
-      });
-      phenophaseElement.node.setAttribute("class", slug );
-      sp.instantiateEventHandlers( phenophaseElement );
+      start = phenophases[phenophase].start;
+      end = phenophases[phenophase].end
+      if( start && end ){
+        var phenophaseElement = this.paper.path().attr({
+          "stroke": "#" + sp.color,
+          "stroke-linecap": "round",
+          "stroke-width": Math.max( this.options.strokeWidth * ( zoom * 0.075 * speciesIndex ), 3 )
+        }).attr({
+          arc: [ center.x, center.y, r * speciesIndex, start, end ]
+        });
+        phenophaseElement.node.setAttribute("class", slug );
+        sp.registerPhenophaseElement( phenophaseElement );        
+      }
     }
   };
 
@@ -101,7 +107,7 @@
     chromeColor = this.options.chromeColor;
     chromeRadiusMod = this.options.chromeRadiusMod;
     // center
-    this.chrome.circle(center.x, center.y, 5).attr({
+    this.chrome.circle(center.x, center.y, 3).attr({
       "fill": chromeColor, 
       "stroke-width": 0
     });
@@ -121,7 +127,7 @@
         center.y,
         r * chromeRadiusMod, 
         janFirst,
-        Date()
+        currentDate
       ]
     });
     var months = [];
@@ -183,9 +189,9 @@
       x: w * scaleFactor,
       y: h * scaleFactor
     }
-    this.paper.clear();
+    this.clearPaper();
 //    this.paper.setViewBox( (w-scale.x)*0.5, (h-scale.y)*0.5, scale.x, scale.y );
-    this.renderPhenophases( this.dataSet, scaleFactor );
+    this.renderPhenophases( this.renderQueue, scaleFactor );
   }
 
 
