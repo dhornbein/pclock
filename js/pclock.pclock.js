@@ -16,15 +16,16 @@
     this.setRenderer();
   }
 
-  pClock.PClock.prototype.constructor = pClock.PClock;
-
   pClock.PClock.prototype.options = {
     initialZoom: 1.5
   }
 
+  pClock.PClock.prototype.constructor = pClock.PClock;
+
   pClock.PClock.prototype.setRenderer = function( renderer ){
     this.renderer = renderer || pClock.renderer;
-    this.renderer.renderPhenophases( this.species, this.options.initialZoom );
+    this.renderer.setRenderQueue(this.species);
+    this.renderer.renderPhenophases( this.options.initialZoom );
   }
 
   pClock.PClock.prototype.setData = function(data){

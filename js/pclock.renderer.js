@@ -1,4 +1,4 @@
-(function(pClock){
+(function(pClock, window ){
 
   ///////////////
   // Renderer
@@ -6,30 +6,31 @@
   //
   pClock.Renderer = function( el, options ) {
     this.options = pClock.util.merge( this.options, options );
-    var w = this.options.w;
-    var h = this.options.h;
     this.element = el; // this is what our Raphael instance will draw onto.
     // instantiate the Raphael instance.
-    this.chrome = new Raphael( this.element.querySelector("#chrome"), w, h );
-    this.paper = new Raphael( this.element.querySelector("#paper"), w, h );
+    this.chrome = new Raphael( "chrome", "100%", "100%" );
+    this.paper = new Raphael( "paper", "100%", "100%" );
     // // some tweaking
-    // window.onResize = this.onResize();
+    window.onresize = this.onResize.bind(this);
+    this.onResize();
     this.defineCustomRaphaelAttributes();
     this.renderChrome();
-  };
+  }
 
   pClock.Renderer.prototype.options = {
     chromeColor: "#99a",
     strokeWidth: 10,
     chromeRadiusMod: 15,
-    w: window.innerWidth,
-    h: window.innerHeight,
-    r: 15,
-    center: {
+    r: 15
+  }
+
+  pClock.Renderer.prototype.getCenterPoint = function() {
+    // this could change.
+    return {
       x: window.innerWidth * 0.5,
-      y: window.innerHeight * 0.5,
+      y: window.innerHeight * 0.5
     }
-  };
+  }
 
   pClock.Renderer.prototype.constructor = pClock.Renderer;
 
@@ -45,23 +46,30 @@
         path: self.describeArc(x, y, radius, self.dateToDegree(startDate), self.dateToDegree(endDate))
       }
     };
-  };
+  }
   
-  pClock.Renderer.prototype.renderPhenophases = function( speciesCollection, zoom ) {
+  pClock.Renderer.prototype.setRenderQueue = function( renderQueue ) {
+    this.renderQueue = renderQueue;
+  }
+
+  
+  pClock.Renderer.prototype.getRenderQueue = function() {
+    return this.renderQueue;
+  }  
+
+  pClock.Renderer.prototype.renderPhenophases = function( scaleFactor ) {
     // var s = new Date();
-    zoom = zoom*0.1 || 1;
-    var start, center, i;
-    this.renderQueue = speciesCollection;
-    start = new Date().getTime();
-    center = this.options.center;
-    i = 1;
+    this.scaleFactor = scaleFactor*0.1 || 1;
+    var start = new Date().getTime(),
+      i = 1,
+      speciesCollection = this.getRenderQueue();
     for( var species in speciesCollection ) {
-      this.renderSpeciesPhenophases( speciesCollection[species], i, zoom );
+      this.renderSpeciesPhenophases( speciesCollection[species], i, this.scaleFactor );
       i++;
     }
     // var e = new Date();
     // console.log("render took", e-s, "ms");
-  };
+  }
 
   pClock.Renderer.prototype.clearPaper = function(){
     for( var species in this.renderQueue ) {
@@ -70,20 +78,24 @@
     this.paper.clear();
   }
 
-  // pClock.Renderer.prototype.onResize = function(sp, speciesIndex, zoom ){
-  //   this.chrome.clear();
-  //   this.renderChrome();
-  // };
+  pClock.Renderer.prototype.onResize = function(){
+    var w = window.innerWidth, h = window.innerHeight;
+    this.clearPaper();
+    this.chrome.clear();
+    this.renderChrome();
+    this.renderPhenophases(this.scaleFactor);
+  };
 
   pClock.Renderer.prototype.renderSpeciesPhenophases = function(sp, speciesIndex, zoom ){
-    var phenophases, r, center, slug, start, end;
-    phenophases = sp.getPhenophases();
-    r = Math.max( this.options.r * ( zoom * 0.05 * speciesIndex ), 6 );
-    center = this.options.center;
-    slug = pClock.util.slugify(sp.name);
+
+    var phenophases = sp.getPhenophases(),
+      r = Math.max( this.options.r * ( zoom * 0.05 * speciesIndex ), 6 ),
+      center = this.getCenterPoint(),
+      slug = pClock.util.slugify(sp.name);
+
     for( var phenophase in phenophases ) {
-      start = phenophases[phenophase].start;
-      end = phenophases[phenophase].end
+      var start = phenophases[phenophase].start,
+        end = phenophases[phenophase].end;
       if( start && end ){
         var phenophaseElement = this.paper.path().attr({
           "stroke": "#" + sp.color,
@@ -96,16 +108,15 @@
         sp.registerPhenophaseElement( phenophaseElement );        
       }
     }
-  };
+  }
 
   pClock.Renderer.prototype.renderChrome = function(){
-    var r, center, chromeColor, chromeRadiusMod, currentDate, janFirst;
-    currentDate = new Date();
-    janFirst = new Date( currentDate.getFullYear(),0,1);
-    r = this.options.r;
-    center = this.options.center;
-    chromeColor = this.options.chromeColor;
-    chromeRadiusMod = this.options.chromeRadiusMod;
+    var currentDate = new Date(),
+      janFirst = new Date( currentDate.getFullYear(),0,1),
+      r = this.options.r,
+      center = this.getCenterPoint(),
+      chromeColor = this.options.chromeColor,
+      chromeRadiusMod = this.options.chromeRadiusMod;
     // center
     this.chrome.circle(center.x, center.y, 3).attr({
       "fill": chromeColor, 
@@ -150,7 +161,7 @@
       months[i].node.setAttribute("class","month-" + i);
       i++;
     }
-  };
+  }
 
   pClock.Renderer.prototype.describeArc = function( x, y, radius, startAngle, endAngle ){
     var start, end, arcSweep, d;
@@ -162,7 +173,7 @@
       ["A", radius, radius, 0, arcSweep, 0, end.x, end.y]
     ];
     return d;
-  };
+  }
 
   pClock.Renderer.prototype.dateToDegree = function( date ) {
     var currentDate, currentYear, janFirst, dayOfYear, ratio;
@@ -172,7 +183,7 @@
     dayOfYear = Math.ceil( ( currentDate - janFirst ) /  pClock.util.MILLISECONDS_IN_A_DAY );
     ratio = dayOfYear / pClock.util.daysInYear( currentYear );
     return ratio * 360;
-  };
+  }
 
   pClock.Renderer.prototype.polarToCartesian = function(centerX, centerY, radius, angleInDegrees) {
     var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
@@ -180,7 +191,7 @@
       x: centerX + (radius * Math.cos(angleInRadians)),
       y: centerY + (radius * Math.sin(angleInRadians))
     }
-  };
+  }
 
   pClock.Renderer.prototype.setZoom = function( scaleFactor ) {
     var w = window.innerWidth;
@@ -190,9 +201,8 @@
       y: h * scaleFactor
     }
     this.clearPaper();
-//    this.paper.setViewBox( (w-scale.x)*0.5, (h-scale.y)*0.5, scale.x, scale.y );
-    this.renderPhenophases( this.renderQueue, scaleFactor );
+    this.renderPhenophases( scaleFactor );
   }
 
 
-})( window.pClock = window.pClock || {} );
+})( window.pClock = window.pClock || {}, window );
