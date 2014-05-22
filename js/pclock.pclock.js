@@ -1,6 +1,6 @@
 // see http://www.andismith.com/blog/2011/10/self-executing-anonymous-revealing-module-pattern/
 
-(function(pClock){
+(function(pClock, window ){
 
   // Class PClock
   pClock.PClock = function( data, options ) {
@@ -61,4 +61,10 @@
     // discuss format for this
     window.location.hash = data.slug;
   }
-})( window.pClock = window.pClock || {} );
+
+  pClock.PClock.prototype.getSVG = function(id) {
+    var svg = document.getElementById(id).innerHTML;
+    console.log( svg );
+  }
+
+})( window.pClock = window.pClock || {}, window );

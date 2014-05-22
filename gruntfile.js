@@ -27,6 +27,7 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true,
         globals: {
+          Avgrund: true,
           Mousetrap: true,
           console: true,
           Raphael: true,
