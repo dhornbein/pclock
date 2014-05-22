@@ -50,25 +50,41 @@
     // this parses the data that came in from google docs
       function phenClockGDImport (json ) {
         var out = [];
+        var speciesKey = -1;
         for( var i = 0; i < json.feed.entry.length; i++){
           var entry = json.feed.entry[i];
-          out[i] = {
-            'id': entry.gsx$id.$t,
-            'categories': entry.gsx$category.$t.split(','),
-            'category': entry.gsx$category.$t,
-            'name': entry.gsx$name.$t,
-            'events': [{
-                'start': entry.gsx$eventstart.$t,
-                'end': entry.gsx$eventend.$t
-            }],
-            'description': entry.gsx$description.$t,
-            'color': entry.gsx$color.$t.replace('#','')
+          var speciesEntry = entry.gsx$speciesname.$t;
+          if (speciesEntry != ""){
+            // If speciesEntry is not blank add new object
+            var species = speciesEntry;
+            speciesKey++;
+            out[speciesKey] = {
+              "species": speciesEntry,
+              "name": entry.gsx$commonname.$t,
+              "variety": entry.gsx$variety.$t,
+              "tags": entry.gsx$tags.$t.split(','),
+              "description": entry.gsx$speciesdescription.$t,
+              "location": entry.gsx$location.$t,
+              "events": []
+            }
+          } else {
+            //if speciesEntry is blank add only event to current specie
+            out[speciesKey].events.push(
+              {
+                "name":entry.gsx$eventname.$t,
+                "start":entry.gsx$eventstart.$t,
+                "end":entry.gsx$eventstart.$t,
+                "description":entry.gsx$eventdescription.$t,
+                "color":entry.gsx$eventcolor.$t.replace('#','')
+              }
+            );
           }
         }
+        console.log(out);
         pClock.data = out;
       }
     </script>
-    <script src="http://spreadsheets.google.com/feeds/list/0AgeC4_lD2gMbdEJIMy1fekxMTG9TYS1YRVYxR2s1aWc/0/public/values?alt=json-in-script&amp;callback=phenClockGDImport"></script>
+    <script src="https://spreadsheets.google.com/feeds/list/0AgeC4_lD2gMbdEJIMy1fekxMTG9TYS1YRVYxR2s1aWc/2/public/values?alt=json-in-script&amp;callback=phenClockGDImport"></script>
 
 </body>
 </html>
