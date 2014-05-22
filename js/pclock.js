@@ -17,6 +17,13 @@
         // instantiate
         pClock.renderer = new pClock.Renderer( document.getElementById('pClock'), rendererOptions );
         pClock.pClock = new pClock.PClock( pClock.data );
+
+        Mousetrap.bind('command+option+s', function() {
+          pClock.pClock.getSVG('paper');
+        });
+        Mousetrap.bind('up up down down left right left right b a enter', function() {
+          window.alert('You have 99 lives');
+        });
       }
     }
     // do we have the data?

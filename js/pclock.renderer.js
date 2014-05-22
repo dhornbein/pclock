@@ -7,14 +7,26 @@
   pClock.Renderer = function( el, options ) {
     this.options = pClock.util.merge( this.options, options );
     this.element = el; // this is what our Raphael instance will draw onto.
+
+    var currentDate = new Date();
+    this.janFirst = new Date( currentDate.getFullYear(),0,1);
+
     // instantiate the Raphael instance.
-    this.chrome = new Raphael( "chrome", "100%", "100%" );
     this.paper = new Raphael( "paper", "100%", "100%" );
+
     // // some tweaking
     window.onresize = this.onResize.bind(this);
     this.onResize();
-    this.defineCustomRaphaelAttributes();
-    this.renderChrome();
+    this.defineCustomRaphaelAttributes(this.paper);
+    if( document.getElementById( "chrome" ) ){
+      this.chrome = new Raphael( "chrome", "100%", "100%" );      
+      this.defineCustomRaphaelAttributes(this.chrome);
+      this.renderChrome();
+    }
+  }
+
+  pClock.Renderer.prototype.getPaper = function() {
+    return this.paper
   }
 
   pClock.Renderer.prototype.options = {
@@ -34,14 +46,9 @@
 
   pClock.Renderer.prototype.constructor = pClock.Renderer;
 
-  pClock.Renderer.prototype.defineCustomRaphaelAttributes = function(){
+  pClock.Renderer.prototype.defineCustomRaphaelAttributes = function(raphaelElement){
     var self = this;
-    this.paper.customAttributes.arc = function (x, y, radius, startDate, endDate) {
-      return {
-        path: self.describeArc(x, y, radius, self.dateToDegree(startDate), self.dateToDegree(endDate))
-      }
-    };
-    this.chrome.customAttributes.arc = function (x, y, radius, startDate, endDate) {
+    raphaelElement.customAttributes.arc = function (x, y, radius, startDate, endDate) {
       return {
         path: self.describeArc(x, y, radius, self.dateToDegree(startDate), self.dateToDegree(endDate))
       }
@@ -81,8 +88,10 @@
   pClock.Renderer.prototype.onResize = function(){
     var w = window.innerWidth, h = window.innerHeight;
     this.clearPaper();
-    this.chrome.clear();
-    this.renderChrome();
+    if( this.chrome ) {
+      this.chrome.clear();
+      this.renderChrome();      
+    }
     this.renderPhenophases(this.scaleFactor);
   };
 
@@ -99,7 +108,6 @@
       if( start && end ){
         var phenophaseElement = this.paper.path().attr({
           "stroke": "#" + sp.color,
-          "stroke-linecap": "round",
           "stroke-width": Math.max( this.options.strokeWidth * ( zoom * 0.075 * speciesIndex ), 3 )
         }).attr({
           arc: [ center.x, center.y, r * speciesIndex, start, end ]
@@ -112,7 +120,6 @@
 
   pClock.Renderer.prototype.renderChrome = function(){
     var currentDate = new Date(),
-      janFirst = new Date( currentDate.getFullYear(),0,1),
       r = this.options.r,
       center = this.getCenterPoint(),
       chromeColor = this.options.chromeColor,
@@ -130,14 +137,14 @@
     // clock
     this.chrome.path().attr({
       "stroke": "#fafafa",
-      "stroke-linecap": "round",
+      // "stroke-linecap": "round",
       "stroke-width": 10
     }).attr({
       arc: [
         center.x,
         center.y,
         r * chromeRadiusMod, 
-        janFirst,
+        this.janFirst,
         currentDate
       ]
     });
@@ -176,11 +183,10 @@
   }
 
   pClock.Renderer.prototype.dateToDegree = function( date ) {
-    var currentDate, currentYear, janFirst, dayOfYear, ratio;
+    var currentDate, currentYear, dayOfYear, ratio;
     currentDate = new Date(date);
     currentYear = currentDate.getFullYear();
-    janFirst = new Date( currentYear, 0, 1);
-    dayOfYear = Math.ceil( ( currentDate - janFirst ) /  pClock.util.MILLISECONDS_IN_A_DAY );
+    dayOfYear = Math.ceil( ( currentDate - this.janFirst ) /  pClock.util.MILLISECONDS_IN_A_DAY );
     ratio = dayOfYear / pClock.util.daysInYear( currentYear );
     return ratio * 360;
   }
@@ -191,6 +197,14 @@
       x: centerX + (radius * Math.cos(angleInRadians)),
       y: centerY + (radius * Math.sin(angleInRadians))
     }
+  }
+
+  pClock.Renderer.prototype.renderIndicatorRing = function( r, strokeWidth ) {
+    var center = this.getCenterPoint();
+    // this.paper.circle(center.x, center.y, r ).attr({
+    //   "stroke": indicatorRingColor,
+    //   "stroke-width": strokeWidth
+    // });
   }
 
   pClock.Renderer.prototype.setZoom = function( scaleFactor ) {

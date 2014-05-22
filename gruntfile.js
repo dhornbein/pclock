@@ -27,6 +27,7 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true,
         globals: {
+          Mousetrap: true,
           console: true,
           Raphael: true,
           require: true,
@@ -80,6 +81,17 @@ module.exports = function(grunt) {
           base: '.',
           hostname: 'localhost',
           livereload: true
+          // middleware: function(connect, options, middlewares) {
+          //   // inject a custom middleware into the array of default middlewares
+          //   middlewares.push(function(req, res, next) {
+          //     if (req.url !== '/node_modules/pclock_savesvg') {
+          //       return next();
+          //     }
+          //     res.end('Hello, world from port');
+          //   });
+
+          //   return middlewares;
+          // }
         }
       }
     },
@@ -129,8 +141,6 @@ module.exports = function(grunt) {
   // Server Task
   //
   grunt.registerTask('serve', 'start the dev server', function(){
-    // it's the tmp file, so we just create it when we run serve  
-    grunt.file.mkdir(".tmp");
     // do a first run build
     grunt.task.run(['useminPrepare','concat:generated','uglify:generated','cssmin:generated','copy:dist','usemin','copy:distSrc']);
     // run the server task
