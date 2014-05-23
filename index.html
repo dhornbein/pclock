@@ -10,37 +10,40 @@
 
   <!-- build:css css/styles.min.css -->
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="libraries/avgrund/avgrund.css">
   <!-- endbuild -->
 
 </head>
+
 <body>
+
+  <div id="data-source-selection-modal" class="avgrund-popup">
+    <!-- Insert fallback content here -->
+    <input type="text" placeholder="Enter a google docs spreadsheet key.">
+    <input type="text" placeholder="Enter which sheet you want.">
+    <a href="#" id="data-source-modal-close">Close</a>
+  </div>
 
   <div id="main" role="main">
 
     <div id="pClock">
-        <div id="paper"></div>
-        <div id="chrome"></div>
-        <!-- Insert fallback content here -->
-    </div>
-
-    <div id="dataOverlay">
-        <!-- Insert fallback content here -->
+      <div id="paper"></div>
+      <div id="chrome"></div>
+      <!-- Insert fallback content here -->
     </div>
 
   </div>
 
-  <div id="data-modal-actuator">
-
-  </div>
 
   <footer id="footer">
+    <a href="#" id="data-modal-actuator">Change Sheet</a>
   </footer>
 
     <script src="libraries/raphael/raphael-min.js"></script>
     <!-- keep these comments here they are needed for grunt -->
     <!-- build:js js/pClock.pkg.min.js -->
     <script src="libraries/mousetrap.min.js"></script>
-    <script src="libraries/avgrund.js"></script>
+    <script src="libraries/avgrund/avgrund.js"></script>
     <script src="js/pclock.utils.js"></script>
     <script src="js/pclock.species.js"></script>
     <script src="js/pclock.renderer.js"></script>

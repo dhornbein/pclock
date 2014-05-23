@@ -25,7 +25,14 @@
           window.alert('You have 99 lives');
         });
       }
+
+      var dataSourceSelectionModalActuator = document.getElementById('data-modal-actuator'); 
+      var dataSourceSelectionModalClose = document.getElementById('data-source-modal-close'); 
+      dataSourceSelectionModalActuator.addEventListener('click', function(){ Avgrund.show('#data-source-selection-modal') } );
+      dataSourceSelectionModalClose.addEventListener('click', function(){ Avgrund.hide() } );
+
     }
+
     // do we have the data?
     if( pClock.data ) {
       // then lets do this
@@ -34,5 +41,7 @@
       // well lets run initApp every 200ms....
       pClock.dataLoadInterval = setInterval( pClock.initApp, 200 );
     }
+
   });
+
 })(window.pClock = window.pClock || {} );
