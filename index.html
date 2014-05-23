@@ -17,10 +17,26 @@
 
 <body>
 
-  <div id="data-source-selection-modal" class="avgrund-popup">
+  <div id="data-source-selection-modal" class="changeSource avgrund-popup">
     <!-- Insert fallback content here -->
-    <input type="text" placeholder="Enter a google docs spreadsheet key.">
-    <input type="text" placeholder="Enter which sheet you want.">
+    <label for="url_source">Spreadsheet URL</label>
+    <p>Just navigate to the published Google Spreadsheet and paste the URL here:</p>
+    <input type="text" id="url_source" onKeyUP="readSource(this.value)" style="width:100%;">
+    <input type="text" id="key" disabled style="width:85%;">
+    <input type="text" id="gid" disabled style="width:8%;">
+    <input type="submit">
+    <script>
+    function readSource(url) {
+      var keyRegex = /key=([a-zA-Z0-9_-]+)/g;
+      var gidRegex = /#gid=([0-9]+)/g;
+      if (gidRegex != undefined){
+        document.getElementById('gid').value = gidRegex.exec(url)[1];
+      }
+      if (keyRegex != undefined){
+        document.getElementById('key').value = keyRegex.exec(url)[1];
+      }
+    }
+    </script>
     <a href="#" id="data-source-modal-close">Close</a>
   </div>
 
